@@ -10,3 +10,4 @@
 generated/
 outputs/
 intermediates/
+build/
