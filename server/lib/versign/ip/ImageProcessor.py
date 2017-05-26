@@ -1,20 +1,27 @@
+from __future__ import print_function
+
 from PIL import Image
 
 
-class Signature:
+class ImageProcessor:
     def __init__(self, image):
         self.signature = image
         self.processed = None
 
-    def preprocess(self):
+    def process(self):
         processed = self.signature.convert("L")
 
-        threshold = self.__calculateThreshold(processed)
-        processed = self.__makeBinary(processed, threshold)
+        print("\n\tThresholding image ... ", end="")
+        threshold = self.__get_threshold(processed, (0, 0, processed.size[0], processed.size[1]))
+        print("Done")
+
+        print("\tBinarizing image ... ", end="")
+        processed = self.__binarize(processed, threshold)
+        print("Done")
 
         self.processed = processed
 
-    def __calculateLocalThreshold(self, image, bounds):
+    def __get_threshold(self, image, bounds):
         # type: (Image, tuple) -> int
         min = 255
         max = 0
@@ -29,12 +36,7 @@ class Signature:
 
         return (min + max) / 2
 
-    def __calculateThreshold(self, image):
-        # type: (Image) -> int
-        bounds = (0, 0, image.size[0], image.size[1])
-        return self.__calculateLocalThreshold(image, bounds)
-
-    def __makeBinary(self, image, threshold):
+    def __binarize(self, image, threshold):
         # type: (int) -> None
         for x in range(0, image.size[0]):
             for y in range(0, image.size[1]):

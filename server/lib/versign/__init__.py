@@ -1,109 +1,79 @@
+from __future__ import print_function
+
 import os
 
 from PIL import Image
 
-from FeatureExtractor import FeatureExtractor
-from FeatureSet import FeatureSet
-from Person import Person
-from Signature import Signature
+from KNNClassifier import KNNClassifier
+from versign.entity.Person import Person
+from versign.io.FeatureReader import FeatureReader
+from versign.io.FeatureWriter import FeatureWriter
+from versign.ip.FeatureExtractor import FeatureExtractor
+from versign.ip.ImageProcessor import ImageProcessor
 
 
-def train(person, load, save):
-    # type: (Person, str, str) -> None
-    save += str(person.id) + "/"
+class VerSign:
+    def __init__(self, person):
+        # type: (Person) -> None
+        self.person = person
 
-    print "Training", person.name
+    def __features(self, infile):
+        # type: (str) -> dict
 
-    # If this person is not already registered, create his directory and profile
-    if not os.path.isdir(save):
-        os.makedirs(save)
+        # Open signature image
+        sign = Image.open(infile)
 
-        outfile = open(save + "person-info.txt", "w")
-        outfile.write(str(person.id) + "\n")
-        outfile.write(str(person.name) + "\n")
-        outfile.close()
+        # Prepare signature for feature extraction
+        print("Preprocessing signature ... ", end="")
+        signature = ImageProcessor(sign)
+        signature.process()
+        print("Done")
 
-    # For each of the images in input directory
-    allFeatures = []
-    for image in os.listdir(load):
-        if image.endswith('.jpg') or image.endswith('.png'):
-            # Open image
-            infile = load + image
-            print "Signature:", infile
-            sign = Image.open(infile)
+        # Extract feature set
+        print("Extracting features ... ", end="")
+        return FeatureExtractor().extract(signature.processed)
 
-            # Prepare signature
-            signature = Signature(sign)
-            signature.preprocess()
+    def train(self):
+        # type: (Person, str) -> None
+        exporter = FeatureWriter()
+        all_features = []
 
-            # Extract feature set
-            processed, features = FeatureExtractor().getFeatures(signature.processed)
-            allFeatures.append(features)
+        # Extract features from each of the reference signatures
+        for signature in os.listdir(self.person.refdir):
+            if signature.endswith('.jpg') or signature.endswith('.png'):
+                print("Training {} ...".format(signature))
+                features = self.__features(self.person.refdir + signature)
+                all_features.append(features)
 
-            # Write feature set to files
-            featureSet = ("ratio", "transitions", "centroid", "blacks", "normalized-size", "inclination", "angle-sum")
-            outfiles = []
+                exporter.exportToCSV(features, self.person.outdir + signature[:-4])
 
-            for feature in featureSet:
-                if not os.path.exists(save + feature):
-                    os.mkdir(save + feature)
+    def test(self, testdir):
+        # type: (str) -> None
+        for ref_sign in os.listdir(self.person.outdir):
+            if ref_sign.endswith('.csv') and ref_sign.startswith("R"):
+                print("Testing against reference {} ...".format(ref_sign))
 
-                outfiles.append(open(save + feature + "/" + image + ".txt", "w"))
+                print("Reading reference signature data ... ", end="")
+                ref_features = FeatureReader().importFromCSV(self.person.outdir + ref_sign)
+                print("Done")
 
-            for key in features:
-                outfiles[0].write(key + ": " + str(features[key][0]) + "\n")
-                outfiles[1].write(key + ": " + str(features[key][1]) + "\n")
-                outfiles[2].write(key + ": " + str(features[key][2]) + "\n")
-                outfiles[3].write(key + ": " + str(features[key][3]) + "\n")
-                outfiles[4].write(key + ": " + str(features[key][4]) + "\n")
-                outfiles[5].write(key + ": " + str(features[key][5]) + "\n")
+                variance = []
+                print("Questioned {} signatures. Test starting now ... ".format(str(len(os.listdir(testdir)))))
+                for questioned_sign in os.listdir(testdir):
+                    if questioned_sign.endswith('.jpg') or questioned_sign.endswith('.png'):
+                        print("Testing: {} ...".format(questioned_sign))
+                        questioned_features = self.__features(testdir + questioned_sign)
+                        print("\nDone")
 
-            for file in outfiles:
-                file.close()
+                        knn = KNNClassifier()
+                        print("Calculating difference ... ", end="")
+                        feature_difference = knn.difference(ref_features, questioned_features)
+                        print("Done")
 
-            # Write processed image to file
-            outfile = save + image
-            processed.save(outfile)
+                        print("Getting variance ... ", end="")
+                        variance.append(knn.variance(feature_difference))
+                        print("Done")
 
-    # Stability analysis
-    print "Calculatin average features ..."
-    average = {}
-    for key in allFeatures[0]:
-        average[key] = [0, 0, [0, 0], 0, 0, 0]
-
-    for features in allFeatures:
-        for key in features:
-            average[key][0] += features[key][0]
-            average[key][1] += features[key][1]
-            average[key][2][0] += features[key][2][0]
-            average[key][2][1] += features[key][2][1]
-            average[key][3] += features[key][3]
-            average[key][4] += features[key][4]
-            average[key][5] += features[key][5]
-
-    for key in average:
-        average[key][0] /= len(allFeatures)
-        average[key][1] /= len(allFeatures)
-        average[key][2][0] /= len(allFeatures)
-        average[key][2][1] /= len(allFeatures)
-        average[key][3] /= len(allFeatures)
-        average[key][4] /= len(allFeatures)
-        average[key][5] /= len(allFeatures)
-
-    print "Writing average features ..."
-    featureSet = ("ratio", "transitions", "centroid", "blacks", "normalized-size", "inclination", "angle-sum")
-    outfiles = []
-
-    for feature in featureSet:
-        outfiles.append(open(save + feature + "/average.txt", "w"))
-
-    for key in average:
-        outfiles[0].write(key + ": " + str(average[key][0]) + "\n")
-        outfiles[1].write(key + ": " + str(average[key][1]) + "\n")
-        outfiles[2].write(key + ": " + str(average[key][2]) + "\n")
-        outfiles[3].write(key + ": " + str(average[key][3]) + "\n")
-        outfiles[4].write(key + ": " + str(average[key][4]) + "\n")
-        outfiles[5].write(key + ": " + str(average[key][5]) + "\n")
-
-    for file in outfiles:
-        file.close()
+                print("Writing variance to file ... ", end="")
+                FeatureWriter().writeTestResuls(variance, self.person.outdir + ref_sign[:-4])
+                print("Done")
