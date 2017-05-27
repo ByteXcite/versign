@@ -1,0 +1,20 @@
+{
+  "name": "bytexcite/versign-admin",
+  "description": "Admin Panel of Offline Signature Verification System for Banks.",
+  "minimum-stability": "dev",
+  "license": "open-source",
+  "authors": [
+    {
+      "name": "Muhammad Saifullah Khan",
+      "email": "14besemsaifullah@seecs.edu.pk"
+    },
+    {
+      "name": "Bilal Ahmad",
+      "email": "14besebahmad@seecs.edu.pk"
+    },
+    {
+      "name": "Muhammad Mahad Tariq",
+      "email": "14besemmahad@seecs.edu.pk"
+    }
+  ]
+}
