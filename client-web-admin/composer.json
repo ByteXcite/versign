@@ -16,5 +16,8 @@
       "name": "Muhammad Mahad Tariq",
       "email": "14besemmahad@seecs.edu.pk"
     }
-  ]
+  ],
+  "require": {
+    "twbs/bootstrap": "v3.3.7"
+  }
 }
