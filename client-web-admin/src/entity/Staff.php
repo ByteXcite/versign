@@ -38,9 +38,9 @@ class Staff
      */
     private $email;
     /**
-     * @var bool
+     * @var int
      */
-    private $isAdmin;
+    private $admin;
 
     /**
      * @return string
@@ -143,15 +143,26 @@ class Staff
      */
     public function isAdmin()
     {
-        return $this->isAdmin;
+        return $this->admin != 0;
     }
 
     /**
-     * @param bool $isAdmin
+     * @param int $admin
      */
-    public function setIsAdmin($isAdmin)
+    public function setAdmin($admin)
     {
-        $this->isAdmin = $isAdmin != 0;
+        $this->admin = $admin;
+    }
+
+    function getJsonData()
+    {
+        $var = get_object_vars($this);
+        foreach ($var as &$value) {
+            if (is_object($value) && method_exists($value, 'getJsonData')) {
+                $value = $value->getJsonData();
+            }
+        }
+        return $var;
     }
 
 }

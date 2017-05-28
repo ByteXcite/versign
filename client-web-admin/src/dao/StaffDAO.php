@@ -33,7 +33,7 @@ class StaffDAO
                     $staff->setFirstName($row[3]);
                     $staff->setLastName($row[4]);
                     $staff->setEmail($row[5]);
-                    $staff->setIsAdmin($row[6]);
+                    $staff->setAdmin($row[6]);
                 }
                 mysqli_free_result($result);
             }
@@ -100,7 +100,7 @@ class StaffDAO
                     $staff->setFirstName($row[3]);
                     $staff->setLastName($row[4]);
                     $staff->setEmail($row[5]);
-                    $staff->setIsAdmin($row[6]);
+                    $staff->setAdmin($row[6]);
 
                     $staffList[] = $staff;
                 }

@@ -18,7 +18,7 @@ class StaffDAOTest extends PHPUnit_Framework_TestCase
         $staff->setPassword("password");
         $staff->setFirstName("Test");
         $staff->setLastName("User");
-        $staff->setIsAdmin(true);
+        $staff->setAdmin(true);
         $dao = new StaffDAO();
         $this->assertTrue($dao->save($staff));
     }
@@ -31,7 +31,7 @@ class StaffDAOTest extends PHPUnit_Framework_TestCase
         $staff->setPassword("password");
         $staff->setFirstName("Test 2");
         $staff->setLastName("User");
-        $staff->setIsAdmin(true);
+        $staff->setAdmin(true);
         $dao = new StaffDAO();
         $this->assertFalse($dao->save($staff));
     }
@@ -44,7 +44,7 @@ class StaffDAOTest extends PHPUnit_Framework_TestCase
         $staff->setPassword("password");
         $staff->setFirstName("Test 3");
         $staff->setLastName("User");
-        $staff->setIsAdmin(true);
+        $staff->setAdmin(true);
         $dao = new StaffDAO();
         $this->assertFalse($dao->save($staff));
     }
