@@ -47,51 +47,27 @@ $user = unserialize($_SESSION["user"]);
 <!-- /Navbar -->
 
 <!-- page content -->
-<div class="container">
+<div class="scroll container">
     <div class="row">
 
         <!-- Sidebar -->
         <div class="col-sm-3">
-            <a href="#" class="btn btn-danger btn-block btn-compose-email">Compose Email</a>
             <ul class="nav nav-pills nav-stacked nav-email shadow mb-20">
                 <li class="active">
                     <a href="#">
-                        <i class="fa fa-inbox"></i> Inbox <span class="label pull-right">7</span>
+                        <figure>
+                            <img class="img-circle img-responsive" alt="" src="http://placehold.it/300x300">
+                        </figure>
                     </a>
                 </li>
-                <li>
-                    <a href="#"><i class="fa fa-envelope-o"></i> Send Mail</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-certificate"></i> Important</a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-file-text-o"></i> Drafts <span
-                            class="label label-info pull-right inbox-notification">35</span>
-                    </a>
-                </li>
-                <li><a href="#"> <i class="fa fa-trash-o"></i> Trash</a></li>
             </ul><!-- /.nav -->
 
-            <h5 class="nav-email-subtitle">More</h5>
             <ul class="nav nav-pills nav-stacked nav-email mb-20 rounded shadow">
-                <li>
-                    <a href="#">
-                        <i class="fa fa-folder-open"></i> Promotions <span
-                            class="label label-danger pull-right">3</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-folder-open"></i> Job list
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-folder-open"></i> Backup
-                    </a>
-                </li>
+                <li><a href="#"><i class="fa fa-id-badge"></i><? echo strtoupper($user->getFirstName()); ?></a></li>
+                <li><a href="#"><i class="fa fa-user-secret"></i><? echo strtoupper($user->getLastName()); ?></a></li>
+                <li><a href="#"><i class="fa fa-key"></i><? echo "@".$user->getUsername(); ?></a></li>
+                <li><a href="#"><i class="fa fa-id-card"></i><? echo $user->getNIC(); ?></a></li>
+                <li><a href="#"><i class="fa fa-envelope"></i> <? echo $user->getEmail(); ?></a></li>
             </ul>
         </div>
         <!-- /Sidebar -->
@@ -99,25 +75,11 @@ $user = unserialize($_SESSION["user"]);
         <!-- Profile Content -->
         <div class="col-sm-9">
             <div class="panel panel-default">
-                <div class="panel-heading resume-heading">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="col-xs-12 col-sm-4">
-                                <figure>
-                                    <img class="img-circle img-responsive" alt="" src="http://placehold.it/300x300">
-                                </figure>
-                            </div>
-                            <div class="col-xs-12 col-sm-8">
-                                <ul class="list-group">
-                                    <li class="list-group-item"><? echo strtoupper($user->getFirstName()); ?></li>
-                                    <li class="list-group-item"><? echo strtoupper($user->getLastName()); ?></li>
-                                    <li class="list-group-item"><? echo "@".$user->getUsername(); ?></li>
-                                    <li class="list-group-item"><i class="fa fa-phone"></i><? echo $user->getNIC(); ?></li>
-                                    <li class="list-group-item"><i class="fa fa-envelope"></i> <? echo $user->getEmail(); ?></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                <div class="bs-callout">
+                    <h3>Introduction</h3>
+                    <p>
+                        Lorem ipsum ...
+                    </p>
                 </div>
                 <div class="bs-callout bs-callout-danger">
                     <h4>Bank Information</h4>

@@ -1,4 +1,4 @@
-package sfllhkhan95.versign;
+package sfllhkhan95.versign.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -17,9 +17,9 @@ public class ImageProcessor {
             for (int y = 0; y < binary.getHeight(); y++) {
                 int color = binary.getPixel(x, y);
                 int R = (color >> 16) & 0xff;
-                int G = (color >>  8) & 0xff;
-                int B = (color      ) & 0xff;
-                color = (R + G + B)/3;
+                int G = (color >> 8) & 0xff;
+                int B = (color) & 0xff;
+                color = (R + G + B) / 3;
                 System.out.printf("(%d, %d, %d) -> %d", R, G, B, color);
 
                 if (color < 128) {
