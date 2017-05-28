@@ -10,7 +10,7 @@ session_start();
 
 require_once(realpath(dirname(__FILE__)) . "/../bo/SessionManager.php");
 if (!SessionManager::getInstance()->isSessionStarted()) {
-    header("Location: ../login.php");
+    header("Location: login.php");
     die();
 }
 
