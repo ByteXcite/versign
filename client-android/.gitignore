@@ -37,6 +37,7 @@ captures/
 .idea/workspace.xml
 .idea/copyright
 .idea/libraries
+.idea/markdown-navigator
 
 # Keystore files
 *.jks
