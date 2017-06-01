@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 
-import com.google.inject.Inject;
-
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -26,7 +24,6 @@ public class LaunchScreen extends RoboActivity {
     /**
      * SessionData object containing data of currently signed in user
      */
-    @Inject
     private SessionData sessionData;
 
     /**
@@ -51,6 +48,8 @@ public class LaunchScreen extends RoboActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sessionData = new SessionData(this);
+
         LaunchScreenController controller = new LaunchScreenController();
         controller.startTimer();
     }
@@ -91,7 +90,7 @@ public class LaunchScreen extends RoboActivity {
                 @Override
                 public void onFinish() {
                     startNextActivity(
-                            sessionData.getCurrentUser() == null
+                            sessionData.getActiveUser() == null
                                     ? showLoginForm
                                     : launchCameraActivity
                     );

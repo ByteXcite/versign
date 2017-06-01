@@ -10,11 +10,6 @@ import android.widget.Toast;
 
 import com.google.inject.Inject;
 
-import java.math.BigInteger;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import roboguice.activity.RoboActivity;
 import roboguice.context.event.OnCreateEvent;
 import roboguice.event.Observes;
@@ -26,6 +21,7 @@ import sfllhkhan95.versign.R;
 import sfllhkhan95.versign.model.dao.StaffDao;
 import sfllhkhan95.versign.model.entity.SessionData;
 import sfllhkhan95.versign.model.entity.Staff;
+import sfllhkhan95.versign.util.HashGenerator;
 
 @ContentView(R.layout.activity_login)
 public class LoginActivity extends RoboActivity {
@@ -54,10 +50,11 @@ public class LoginActivity extends RoboActivity {
     @Inject
     private StaffDao staffDao;
 
-    @Inject
     private SessionData sessionData;
 
     public void initialize(@Observes OnCreateEvent e) {
+        sessionData = new SessionData(this);
+
         LoginController loginController = new LoginController(this);
         loginButton.setOnClickListener(loginController);
     }
@@ -97,27 +94,13 @@ public class LoginActivity extends RoboActivity {
             this.loginActivity = loginActivity;
         }
 
-        private String md5(String s) {
-            MessageDigest digest;
-            try {
-                digest = MessageDigest.getInstance("MD5");
-                digest.update(s.getBytes(Charset.forName("US-ASCII")), 0, s.length());
-                byte[] magnitude = digest.digest();
-                BigInteger bi = new BigInteger(1, magnitude);
-                return String.format("%0" + (magnitude.length << 1) + "x", bi);
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-            return "";
-        }
-
         @Override
         public void onClick(View v) {
             String u = loginActivity.getUsername();
             String p = loginActivity.getPassword();
 
             if (isValid(u) && isValid(p)) {
-                staffDao.getFetchRequest(loginActivity.getUsername(), md5(loginActivity.getPassword()), this)
+                staffDao.getFetchRequest(loginActivity.getUsername(), HashGenerator.md5(loginActivity.getPassword()), this)
                         .showStatus(loginActivity.getLayoutInflater(), loginActivity.getRootView())
                         .sendRequest();
             } else {
@@ -128,7 +111,7 @@ public class LoginActivity extends RoboActivity {
         @Override
         public void onResponseReceived(@Nullable Staff staff) {
             if (staff != null && !staff.isAdmin()) {
-                sessionData.setCurrentUser(staff);
+                sessionData.createSession(staff);
                 loginActivity.signInSuccess();
             } else {
                 loginActivity.signInFailure();
