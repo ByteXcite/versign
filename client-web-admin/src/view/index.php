@@ -150,7 +150,7 @@ $user = unserialize($_SESSION["user"]);
                             <td>" . $emp->getNic() . "</td>
                             <td>" . $emp->getFirstName() . "</td>
                             <td>" . $emp->getLastName() . "</td>
-                            <td>" . $emp->isAdmin() . "</td>
+                            <td>" . $emp->getPosition() . "</td>
                             <td>" . $emp->getUsername() . "</td>
                             <td>" . $emp->getEmail() . "</td>
                         </tr>";
@@ -170,12 +170,11 @@ $user = unserialize($_SESSION["user"]);
                 <a href="employee_add.php">
                     <button class="btn-primary">Hire Employee</button>
                 </a>
-                <a href="?edit_employee">
-                    <button class="btn-primary">Edit Employee</button>
-                </a>
-                <a href="?remove_employee">
-                    <button class="btn-primary">Fire Employee</button>
-                </a>
+                <br><br>
+                <form method="post" action="../controller/route.php?controller=StaffManagementController&action=fire">
+                    <input type="number" maxlength="13" minlength="13" name="nic" placeholder="Employee NIC"/>
+                    <button class="btn-primary" type="submit">Fire Employee</button>
+                </form>
             </div>
         </div>
     </div>

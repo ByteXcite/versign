@@ -147,6 +147,22 @@ class Staff
     }
 
     /**
+     * @return int
+     */
+    public function getAdmin()
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPosition()
+    {
+        return $this->isAdmin() ? "Manager" : "Cashier";
+    }
+
+    /**
      * @param int $admin
      */
     public function setAdmin($admin)

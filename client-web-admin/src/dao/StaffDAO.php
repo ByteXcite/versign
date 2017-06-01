@@ -53,10 +53,11 @@ class StaffDAO
     public function save($staff)
     {
         if ($connection = Database::getConnection()) {
-            $query = "INSERT INTO `staff` (`nic`, `username`, `password`, `firstName`, `lastName`, `isAdmin`) VALUE
+            $query = "INSERT INTO `staff` (`nic`, `username`, `password`, `firstName`, `lastName`, `email`, `isAdmin`) VALUE
                       ('" . $staff->getNic() . "', '" . $staff->getUsername() . "',  md5('" . $staff->getPassword() . "'),
-                       '" . $staff->getFirstName() . "', '" . $staff->getLastName() . "', '".$staff->isAdmin()."');";
-
+                       '" . $staff->getFirstName() . "', '" . $staff->getLastName() . "', '".$staff->getEmail().
+                        "', '".$staff->getAdmin()."');";
+            echo $query;
             if (mysqli_query($connection, $query)) {
                 return true;
             }
@@ -74,7 +75,7 @@ class StaffDAO
     public function delete($username)
     {
         if ($connection = Database::getConnection()) {
-            $query = "DELETE FROM `staff` WHERE `username` LIKE '$username'";
+            $query = "DELETE FROM `staff` WHERE `username` LIKE '$username' OR `nic` LIKE '$username'";
 
             if (mysqli_query($connection, $query)) {
                 return true;
@@ -92,7 +93,7 @@ class StaffDAO
             $query = "SELECT * FROM `staff`;";
 
             if ($result = mysqli_query($connection, $query)) {
-                if ($row = mysqli_fetch_row($result)) {
+                while ($row = mysqli_fetch_row($result)) {
                     $staff = new Staff();
                     $staff->setNic($row[0]);
                     $staff->setUsername($row[1]);

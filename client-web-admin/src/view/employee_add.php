@@ -59,7 +59,8 @@ $user = unserialize($_SESSION["user"]);
         <div class='clearfix'></div>
     </div>
     <div class='form_content container'>
-        <form method="post" class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <form method="post" class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2"
+                action="../controller/route.php?controller=StaffManagementController&action=hire">
             <div class="form-group">
                 <label class="col-sm-12 col-xs-12">Personal Information <sup>*</sup></label>
                 <input type="number" min="1111111111111" max="9999999999999" name="nic" placeholder="CNIC"
@@ -75,11 +76,11 @@ $user = unserialize($_SESSION["user"]);
                 <input type="text" name="account" placeholder="Account # (Optional)"/>
                 <label for="manager-role" class="col-sm-6 col-xs-12 btn btn-default" style="color: black">
                     Manager
-                    <input id="manager-role" style="width: 20px" type="radio" name="role" value="manager" required>
+                    <input id="manager-role" style="width: 20px" type="radio" name="role" value="1" required>
                 </label>
                 <label for="cashier-role" class="col-sm-6 col-xs-12 btn btn-default" style="color: black">
                     Cashier
-                    <input id="cashier-role" style="width: 20px" type="radio" name="role" value="cashier" checked required>
+                    <input id="cashier-role" style="width: 20px" type="radio" name="role" value="0" checked required>
                 </label>
             </div>
             <div class="clearfix"></div><br>
