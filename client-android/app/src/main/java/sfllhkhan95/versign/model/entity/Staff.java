@@ -69,6 +69,32 @@ public class Staff {
     }
 
     public void setAdmin(String admin) {
-        this.admin = admin;
+        this.admin = (admin.equals("0") || admin.toLowerCase().equals("false")) ? "0" : "1";
+    }
+
+    public static Staff fromString(String currentUser) {
+        String delim = ", ";
+        String[] properties = currentUser.split(delim);
+        Staff staff = new Staff();
+        staff.setNic(properties[0]);
+        staff.setUsername(properties[1]);
+        staff.setPassword(properties[2]);
+        staff.setFirstName(properties[3]);
+        staff.setLastName(properties[4]);
+        staff.setEmail(properties[5]);
+        staff.setAdmin(properties[6]);
+        return staff;
+    }
+
+    @Override
+    public String toString() {
+        String delim = ", ";
+        return nic + delim +
+                username + delim +
+                password + delim +
+                firstName + delim +
+                lastName + delim +
+                email + delim +
+                admin;
     }
 }
