@@ -11,6 +11,12 @@
     <string name="cameraError">Camera could not be opened. Check permissions.</string>
     <string name="storageError">Could not create file for storage.</string>
     <string name="writeError">Could not write image data.</string>
+    <string name="customerError">Customer NIC is required and should be 13-digits long.</string>
+    <string name="verifyingSiganture">Verifying …</string>
+    <string name="verificationSuccess">Verification successful. Signature is genuine!</string>
+    <string name="verificationFailure">Signature is forged!</string>
+    <string name="verificationError">Signature verification failed.</string>
+    <string name="preparingSignature">Preparing ...</string>
     <!-- /Messages -->
 
     <!-- Labels -->
@@ -22,5 +28,6 @@
     <!-- Placeholders -->
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="customerID">Customer\'s NIC</string>
     <!-- /Placeholders -->
 </resources>

@@ -4,20 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sfllhkhan95.versign.view_controller.CameraActivity">
+    android:background="@drawable/bg"
+    tools:context="sfllhkhan95.versign.view.activity.CameraActivity">
 
-    <Button
-        android:id="@+id/scan_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp"
-        android:text="Scan" />
-
-    <ImageView
-        android:id="@+id/image"
+    <FrameLayout
+        android:id="@+id/cameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <EditText style="@style/input"
+        android:id="@+id/customerID"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:inputType="number"
+        android:maxLines="1"
+        android:maxLength="13"
+        android:hint="@string/customerID"/>
+
+    <Button style="@style/btn.primary"
+        android:id="@+id/scanButton"
+        android:layout_width="150dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:text="@string/scanButton" />
 
 </RelativeLayout>
