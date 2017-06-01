@@ -7,6 +7,8 @@
  */
 ob_start();
 require_once(realpath(dirname(__FILE__))."/LoginController.php");
+require_once(realpath(dirname(__FILE__))."/StaffManagementController.php");
+
 
 echo "<pre>";
 echo "Routing request ...\n";

@@ -21,11 +21,13 @@ class StaffManagementController
 
     public function hire()
     {
-
+        $staff = new Staff();
+        $staff->setEmail($_POST["email"]);
+        $this->staffDao->save($staff);
     }
 
     public function fire()
     {
-
+        echo "Employee fired";
     }
 }
