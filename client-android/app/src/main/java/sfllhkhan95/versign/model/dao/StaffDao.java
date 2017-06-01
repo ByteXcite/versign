@@ -1,10 +1,11 @@
-package sfllhkhan95.versign.dao;
+package sfllhkhan95.versign.model.dao;
+
+import java.net.MalformedURLException;
 
 import sfllhkhan95.android.rest.HttpRequest;
-import sfllhkhan95.android.rest.HttpServer;
 import sfllhkhan95.android.rest.ResponseHandler;
-import sfllhkhan95.versign.entity.Credentials;
-import sfllhkhan95.versign.entity.Staff;
+import sfllhkhan95.versign.model.entity.Credentials;
+import sfllhkhan95.versign.model.entity.Staff;
 import sfllhkhan95.versign.util.WebServer;
 
 /**
@@ -16,10 +17,9 @@ import sfllhkhan95.versign.util.WebServer;
  */
 public class StaffDao {
 
-    private final HttpServer server;
+    private WebServer server = new WebServer();
 
-    public StaffDao() throws NullPointerException {
-        server = WebServer.getInstance().getHttpServer();
+    public StaffDao() throws MalformedURLException {
     }
 
     public HttpRequest<Staff> getFetchRequest(String username, String password, ResponseHandler<Staff> handler) {

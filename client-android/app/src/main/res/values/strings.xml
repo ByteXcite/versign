@@ -1,3 +1,26 @@
 <resources>
+    <!-- AppData -->
     <string name="app_name">VerSign</string>
+    <!-- /AppData -->
+
+    <!-- Messages -->
+    <string name="signInSuccess">You are now signed in.</string>
+    <string name="signInFailure">Invalid username/password combination.</string>
+    <string name="connectionError">Communication error. Check your network connection.</string>
+    <string name="credentialsError">Username/password cannot be empty.</string>
+    <string name="cameraError">Camera could not be opened. Check permissions.</string>
+    <string name="storageError">Could not create file for storage.</string>
+    <string name="writeError">Could not write image data.</string>
+    <!-- /Messages -->
+
+    <!-- Labels -->
+    <string name="loginButton">Login</string>
+    <string name="logoutButton">Logout</string>
+    <string name="scanButton">Scan</string>
+    <!-- /Labels -->
+
+    <!-- Placeholders -->
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <!-- /Placeholders -->
 </resources>

@@ -14,6 +14,7 @@
         <item name="android:shadowRadius">2</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
+        <item name="android:layout_marginTop">5dp</item>
     </style>
 
     <style name="input" parent="Base.V7.Widget.AppCompat.EditText">

@@ -1,4 +1,4 @@
-package sfllhkhan95.versign.entity;
+package sfllhkhan95.versign.model.entity;
 
 
 /**
