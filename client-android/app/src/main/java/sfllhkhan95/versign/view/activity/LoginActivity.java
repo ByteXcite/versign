@@ -16,6 +16,7 @@ import roboguice.event.Observes;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
+import sfllhkhan95.android.rest.HttpRequest;
 import sfllhkhan95.android.rest.ResponseHandler;
 import sfllhkhan95.versign.R;
 import sfllhkhan95.versign.model.dao.StaffDao;
@@ -100,9 +101,12 @@ public class LoginActivity extends RoboActivity {
             String p = loginActivity.getPassword();
 
             if (isValid(u) && isValid(p)) {
-                staffDao.getFetchRequest(loginActivity.getUsername(), HashGenerator.md5(loginActivity.getPassword()), this)
-                        .showStatus(loginActivity.getLayoutInflater(), loginActivity.getRootView())
-                        .sendRequest();
+                HttpRequest<Staff> request = staffDao.getFetchRequest(
+                        loginActivity.getUsername(),
+                        HashGenerator.md5(loginActivity.getPassword())
+                );
+                request.showStatus(loginActivity.getRootView());
+                request.sendRequest(this);
             } else {
                 loginActivity.credentialsError();
             }

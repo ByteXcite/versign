@@ -219,8 +219,9 @@ public class CameraActivity extends RoboActivity implements View.OnClickListener
                 String ID = customerID.getText().toString().trim();
 
                 // Send verification request
-                verificationController.getVerificationRequest(ID, signatureImage, CameraActivity.this)
-                        .sendRequest();
+                verificationController
+                        .getVerificationRequest(ID, signatureImage)
+                        .sendRequest(CameraActivity.this);
             }
         }.execute(bitmap);
     }

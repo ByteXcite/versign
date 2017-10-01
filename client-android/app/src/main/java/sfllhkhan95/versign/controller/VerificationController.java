@@ -3,7 +3,6 @@ package sfllhkhan95.versign.controller;
 import java.net.MalformedURLException;
 
 import sfllhkhan95.android.rest.HttpRequest;
-import sfllhkhan95.android.rest.ResponseHandler;
 import sfllhkhan95.versign.model.entity.SignatureImage;
 import sfllhkhan95.versign.model.entity.VerificationRequest;
 import sfllhkhan95.versign.model.entity.VerificationResponse;
@@ -27,16 +26,14 @@ public class VerificationController {
     }
 
     public HttpRequest<VerificationResponse> getVerificationRequest(
-            String customerID, SignatureImage signatureImage,
-            ResponseHandler<VerificationResponse> handler
-    ) {
+            String customerID, SignatureImage signatureImage)
+    {
         HttpRequest<VerificationResponse> request = new HttpRequest<>(
                 server,
                 "VerificationController.php",
                 VerificationResponse.class
         );
         request.setPayload(new VerificationRequest(customerID, signatureImage));
-        request.setResponseHandler(handler);
         return request;
     }
 }

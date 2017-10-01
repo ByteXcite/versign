@@ -1,1 +1,1 @@
-include ':app', ':rest-api', ':cv'
+include ':app', ':cv'

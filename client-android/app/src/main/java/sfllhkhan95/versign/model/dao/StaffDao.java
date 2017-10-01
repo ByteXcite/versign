@@ -3,7 +3,6 @@ package sfllhkhan95.versign.model.dao;
 import java.net.MalformedURLException;
 
 import sfllhkhan95.android.rest.HttpRequest;
-import sfllhkhan95.android.rest.ResponseHandler;
 import sfllhkhan95.versign.model.entity.Credentials;
 import sfllhkhan95.versign.model.entity.Staff;
 import sfllhkhan95.versign.util.WebServer;
@@ -22,14 +21,13 @@ public class StaffDao {
     public StaffDao() throws MalformedURLException {
     }
 
-    public HttpRequest<Staff> getFetchRequest(String username, String password, ResponseHandler<Staff> handler) {
+    public HttpRequest<Staff> getFetchRequest(String username, String password) {
         HttpRequest<Staff> request = new HttpRequest<>(
                 server,
                 "LoginController.php",
                 Staff.class
         );
         request.setPayload(new Credentials(username, password));
-        request.setResponseHandler(handler);
         return request;
     }
 
