@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/saifkhichi96/Dropbox/Development/apps/offline-signature-verification/client-android/opencv/src/main/assets"/><source path="/Users/saifkhichi96/Dropbox/Development/apps/offline-signature-verification/client-android/opencv/build/generated/assets/shaders/debug"/></dataSet><dataSet config="debug"><source path="/Users/saifkhichi96/Dropbox/Development/apps/offline-signature-verification/client-android/opencv/src/debug/assets"/></dataSet></merger>
