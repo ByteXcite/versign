@@ -1,21 +1,17 @@
 package sfllhkhan95.versign.view.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.inject.Inject;
+import java.net.MalformedURLException;
 
-import roboguice.activity.RoboActivity;
-import roboguice.context.event.OnCreateEvent;
-import roboguice.event.Observes;
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectResource;
-import roboguice.inject.InjectView;
 import sfllhkhan95.android.rest.HttpRequest;
 import sfllhkhan95.android.rest.ResponseHandler;
 import sfllhkhan95.versign.R;
@@ -24,37 +20,41 @@ import sfllhkhan95.versign.model.entity.SessionData;
 import sfllhkhan95.versign.model.entity.Staff;
 import sfllhkhan95.versign.util.HashGenerator;
 
-@ContentView(R.layout.activity_login)
-public class LoginActivity extends RoboActivity {
+public class LoginActivity extends AppCompatActivity {
 
-    @InjectView(R.id.username)
     private EditText username;
-
-    @InjectView(R.id.password)
     private EditText password;
-
-    @InjectView(R.id.activity_login)
     private ViewGroup rootView;
-
-    @InjectView(R.id.loginButton)
     private Button loginButton;
 
-    @InjectResource(R.string.credentialsError)
     private String credentialsError;
-
-    @InjectResource(R.string.signInFailure)
     private String signInFailure;
-
-    @InjectResource(R.string.signInSuccess)
     private String signInSuccess;
 
-    @Inject
     private StaffDao staffDao;
 
     private SessionData sessionData;
 
-    public void initialize(@Observes OnCreateEvent e) {
-        sessionData = new SessionData(this);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        sessionData = SessionData.getInstance(this);
+
+        username = (EditText) findViewById(R.id.username);
+        password = (EditText) findViewById(R.id.password);
+        rootView = (ViewGroup) findViewById(R.id.activity_login);
+        loginButton = (Button) findViewById(R.id.loginButton);
+
+        credentialsError = getString(R.string.credentialsError);
+        signInFailure = getString(R.string.signInFailure);
+        signInSuccess = getString(R.string.signInSuccess);
+
+        try {
+            staffDao = new StaffDao();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
         LoginController loginController = new LoginController(this);
         loginButton.setOnClickListener(loginController);

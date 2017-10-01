@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,16 +17,11 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.inject.Inject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
-import roboguice.activity.RoboActivity;
-import roboguice.inject.ContentView;
-import roboguice.inject.InjectResource;
-import roboguice.inject.InjectView;
 import sfllhkhan95.android.rest.ResponseHandler;
 import sfllhkhan95.versign.R;
 import sfllhkhan95.versign.controller.VerificationController;
@@ -35,35 +31,18 @@ import sfllhkhan95.versign.model.entity.VerificationResponse;
 import sfllhkhan95.versign.view.CameraPreview;
 
 
-@ContentView(R.layout.activity_camera)
-public class CameraActivity extends RoboActivity implements View.OnClickListener,
+public class CameraActivity extends AppCompatActivity implements View.OnClickListener,
         Camera.PictureCallback, ResponseHandler<VerificationResponse> {
 
-    @InjectView(R.id.cameraView)
     private FrameLayout cameraLayout;
-
-    @InjectView(R.id.scanButton)
     private Button captureButton;
-
-    @InjectView(R.id.customerID)
     private EditText customerID;
 
-    @InjectResource(R.string.storageError)
     private String storageError;
-
-    @InjectResource(R.string.writeError)
     private String writeError;
-
-    @InjectResource(R.string.cameraError)
     private String cameraError;
-
-    @InjectResource(R.string.app_name)
     private String appName;
-
-    @InjectResource(R.string.customerError)
     private String customerError;
-
-    @InjectResource(R.string.verificationSuccess)
     private String verificationSuccess;
 
     private Dialog preparingSignatureDialog;
@@ -72,7 +51,6 @@ public class CameraActivity extends RoboActivity implements View.OnClickListener
     private Dialog verificationFailureDialog;
     private Dialog verificationErrorDialog;
 
-    @Inject
     private VerificationController verificationController;
 
     private Camera camera;
@@ -80,6 +58,24 @@ public class CameraActivity extends RoboActivity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_camera);
+
+        cameraLayout = (FrameLayout) findViewById(R.id.cameraView);
+        captureButton = (Button) findViewById(R.id.scanButton);
+        customerID = (EditText) findViewById(R.id.customerID);
+
+        storageError = getString(R.string.storageError);
+        writeError = getString(R.string.writeError);
+        cameraError = getString(R.string.cameraError);
+        appName = getString(R.string.app_name);
+        customerError = getString(R.string.customerError);
+        verificationSuccess = getString(R.string.verificationSuccess);
+
+        try {
+            verificationController = new VerificationController();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
 
         captureButton.setOnClickListener(this);
 

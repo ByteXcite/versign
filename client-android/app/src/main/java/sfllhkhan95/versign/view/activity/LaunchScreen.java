@@ -1,16 +1,22 @@
 package sfllhkhan95.versign.view.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
-import roboguice.activity.RoboActivity;
-import roboguice.inject.ContentView;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import sfllhkhan95.versign.R;
 import sfllhkhan95.versign.model.entity.SessionData;
 
@@ -18,8 +24,12 @@ import sfllhkhan95.versign.model.entity.SessionData;
  * LaunchScreen is the Launcher Activity, which is the entry point of application. The application
  * starts with this screen which is displayed for a few seconds.
  */
-@ContentView(R.layout.activity_launch_screen)
-public class LaunchScreen extends RoboActivity {
+public class LaunchScreen extends AppCompatActivity {
+
+    private final long delay = 1500L;
+    private final int CAMERA_PERMISSION_TAG = 200;
+    private final int STORAGE_PERMISSION_TAG = 400;
+
 
     /**
      * SessionData object containing data of currently signed in user
@@ -48,10 +58,51 @@ public class LaunchScreen extends RoboActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionData = new SessionData(this);
+        setContentView(R.layout.activity_launch_screen);
+        sessionData = SessionData.getInstance(this);
 
-        LaunchScreenController controller = new LaunchScreenController();
-        controller.startTimer();
+        if (checkPermissions()) {
+            LaunchScreenController controller = new LaunchScreenController(delay);
+            controller.startTimer();
+        }
+    }
+
+    private boolean checkPermissions() {
+        if (!isGranted(Manifest.permission.CAMERA) || !isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (!isGranted(Manifest.permission.CAMERA)) {
+                requestPermission(Manifest.permission.CAMERA, CAMERA_PERMISSION_TAG);
+            }
+
+            if (!isGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                requestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERMISSION_TAG);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isGranted(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission(String permission, int tag) {
+        ActivityCompat.requestPermissions(this, new String[]{permission}, tag);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION_TAG:
+            case STORAGE_PERMISSION_TAG:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    LaunchScreenController controller = new LaunchScreenController(delay);
+                    controller.startTimer();
+                } else {
+                    finish();
+                }
+                break;
+        }
     }
 
     /**
@@ -72,30 +123,17 @@ public class LaunchScreen extends RoboActivity {
 
     private class LaunchScreenController {
 
+        private final long delay;
+
         private Intent showLoginForm;
         private Intent launchCameraActivity;
 
-        private CountDownTimer launchScreenTimer;
-
-        LaunchScreenController() {
+        LaunchScreenController(long delay) {
+            this.delay = delay;
             showLoginForm = new Intent(LaunchScreen.this, LoginActivity.class);
             launchCameraActivity = new Intent(LaunchScreen.this, CameraActivity.class);
 
-            launchScreenTimer = new CountDownTimer(3000, 3000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
 
-                }
-
-                @Override
-                public void onFinish() {
-                    startNextActivity(
-                            sessionData.getActiveUser() == null
-                                    ? showLoginForm
-                                    : launchCameraActivity
-                    );
-                }
-            };
         }
 
         private void startNextActivity(Intent intent) {
@@ -105,7 +143,16 @@ public class LaunchScreen extends RoboActivity {
         }
 
         void startTimer() {
-            launchScreenTimer.start();
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    startNextActivity(
+                            sessionData.getActiveUser() == null
+                                    ? showLoginForm
+                                    : launchCameraActivity
+                    );
+                }
+            }, delay);
         }
     }
 
