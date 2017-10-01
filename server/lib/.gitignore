@@ -1,6 +1,11 @@
 # IntelliJ files
 .idea/
 
+# Datasets
+sigver_wiwd/
+data/
+features/
+
 # Build files
 build/
 out/
