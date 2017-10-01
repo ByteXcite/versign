@@ -1,2 +1,1 @@
-include ':app', ':rest-api'
-include ':opencv'
+include ':app', ':rest-api', ':opencv'
