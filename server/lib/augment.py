@@ -1,48 +1,70 @@
+#########################################################################################
+# This script takes two arguments, inDir and outDir, and augments the input data in     #
+# inDir by generating four new images for each image in the input data. Augmentation is #
+# performed by performing minor transformations (rotation, etc.) on input data.         #
+#########################################################################################
+from CertSign import ImageProcessor
 from PIL import Image
-import numpy as np
-import cv2
 
-import random
-import os
+import cv2, random, os, numpy as np, sys
 
-# os.system("process_folder.py ../data/MyData/Forged/ ../features/MyData/Questioned models/signet.pkl")
 
 def otsu(image):
     blur = cv2.GaussianBlur(image, (5,5), 0)
     ret, bin = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     return bin
 
-def rotate_random(image, min=-5, max=5):
+def randomRotate(image, min=-5, max=5):
     im2 = image.convert("RGBA")
     rot = im2.rotate(random.uniform(min, max), expand=True)
     fff = Image.new("RGBA", rot.size, (255,)*4)
     out = Image.composite(rot, fff, rot)
     return out.convert(image.mode)
 
-def save_rotated(img, file, postfix, type=".png"):
-    path = file + "." + str(postfix) + type
-    print path
-    img.save(path)
+def main():
+    # Validate command-line arguments
+    if len(sys.argv) < 3:
+        print "\nUsage:\tpython", sys.argv[0], "<input-folder> <output-folder>\n"
+        return
 
-dir = "data/MyData/Forged/"
-input_data = ["F001", "F002", "F003", "F004"]
-type = ".jpg"
+    # Path of input directory
+    inDir = sys.argv[1]
+    if not inDir.endswith("/"):
+        inDir += "/"
 
-n = 0.0
-for i in input_data:
-    n += 1.0
+    # Path where augmented data will be saved
+    outDir = sys.argv[2]
+    if not outDir.endswith("/"):
+        outDir += "/"
 
-    # Open the signature image and apply OTSU thresholding
-    image = cv2.imread(dir + i + type, 0)
-    b_img = otsu(image)
+    # No. of copies of to create
+    copies = 4
 
-    # Save binary signature image
-    out_file = dir + i + ".0" + type
-    cv2.imwrite(out_file, b_img)
-    
-    # Augment input signature by creating seven copies
-    # rotated at random angles in range (-5, 5)
-    b_img = Image.open(out_file)
-    for j in range(1, 7):
-        rotated = rotate_random(b_img, min=-5, max=5)
-        save_rotated(rotated, dir + i, j)
+    # Max angle to rotate through
+    aMax = 5
+
+    # For each image file in the input directory
+    for file in os.listdir(inDir):
+        if not file.endswith(".jpg") and not file.endswith(".png"):   # Ignore non-images
+            continue
+
+        # Extract file name and extension
+        fn = file[:-4]
+        ext = "." + file.split(".")[-1]
+        print fn, ext
+
+        # Apply OTSU thresholding on input image and save it
+        outFile = outDir + fn + ".0" + ext
+        cv2.imwrite(outFile, otsu(cv2.imread(inDir +  fn + ext, 0)))
+
+        # Crop and normalize image's size
+        cropped = ImageProcessor().preprocess(Image.open(outFile).convert("L"))
+        cropped.save(outFile)
+
+        # Augment input data by rotating image at random angles in range (-5, 5)
+        image = Image.open(outFile)
+        for i in range(0, copies):
+            rotated = randomRotate(image, min=-aMax, max=aMax)
+            rotated.save(outDir + fn + "." + str(i + 1) + ext)
+
+main()
