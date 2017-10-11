@@ -7,7 +7,7 @@ data/
 features/
 
 # Build files
-.pyc
+*.pyc
 build/
 out/
 target/
