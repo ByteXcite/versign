@@ -4,10 +4,10 @@ import android.graphics.Bitmap;
 
 public class SignatureImage {
 
-    private String pixelData;
     private final int width;
     private final int height;
     public Bitmap bitmap;
+    private String pixelData;
 
     public SignatureImage(final Bitmap bitmap) {
         this.width = bitmap.getWidth();

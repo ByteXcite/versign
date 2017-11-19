@@ -1,11 +1,12 @@
 package com.bytexcite.versign.model.dao;
 
-import java.net.MalformedURLException;
-
-import sfllhkhan95.android.rest.HttpRequest;
 import com.bytexcite.versign.model.entity.Credentials;
 import com.bytexcite.versign.model.entity.Staff;
 import com.bytexcite.versign.util.WebServer;
+
+import java.net.MalformedURLException;
+
+import sfllhkhan95.android.rest.HttpRequest;
 
 /**
  * StaffDao is a data-access class for Staff entity which allows retrieval

@@ -10,18 +10,9 @@ import android.content.SharedPreferences;
  */
 public class SessionData {
     private static final String PREF_NAME = "_versignSession";
+    private static SessionData ourInstance = null;
     private final SharedPreferences preferences;
     private Staff activeUser;
-
-    private static SessionData ourInstance = null;
-
-    public static SessionData getInstance(Activity context) {
-        if (ourInstance == null) {
-            ourInstance = new SessionData(context);
-        }
-
-        return ourInstance;
-    }
 
     private SessionData(Activity context) {
         preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -29,6 +20,14 @@ public class SessionData {
         if (currentUser != null) {
             this.activeUser = Staff.fromString(currentUser);
         }
+    }
+
+    public static SessionData getInstance(Activity context) {
+        if (ourInstance == null) {
+            ourInstance = new SessionData(context);
+        }
+
+        return ourInstance;
     }
 
     public void createSession(Staff loggedInStaff) {

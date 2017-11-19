@@ -19,18 +19,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-
-import sfllhkhan95.android.rest.ResponseHandler;
 import com.bytexcite.versign.R;
 import com.bytexcite.versign.controller.VerificationController;
 import com.bytexcite.versign.model.entity.Customer;
 import com.bytexcite.versign.model.entity.SignatureImage;
 import com.bytexcite.versign.model.entity.VerificationResponse;
 import com.bytexcite.versign.view.CameraPreview;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import sfllhkhan95.android.rest.ResponseHandler;
 
 
 public class CameraActivity extends AppCompatActivity implements View.OnClickListener,

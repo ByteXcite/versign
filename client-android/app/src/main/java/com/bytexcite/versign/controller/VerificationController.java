@@ -1,12 +1,13 @@
 package com.bytexcite.versign.controller;
 
-import java.net.MalformedURLException;
-
-import sfllhkhan95.android.rest.HttpRequest;
 import com.bytexcite.versign.model.entity.SignatureImage;
 import com.bytexcite.versign.model.entity.VerificationRequest;
 import com.bytexcite.versign.model.entity.VerificationResponse;
 import com.bytexcite.versign.util.WebServer;
+
+import java.net.MalformedURLException;
+
+import sfllhkhan95.android.rest.HttpRequest;
 
 
 /**
@@ -26,8 +27,7 @@ public class VerificationController {
     }
 
     public HttpRequest<VerificationResponse> getVerificationRequest(
-            String customerID, SignatureImage signatureImage)
-    {
+            String customerID, SignatureImage signatureImage) {
         HttpRequest<VerificationResponse> request = new HttpRequest<>(
                 server,
                 "VerificationController.php",
