@@ -1,4 +1,4 @@
-from classifiers import OneClassSVM
+from classifiers import OneClassSVM, OneClassSVMWithPCA
 from sklearn.metrics import accuracy_score
 
 import numpy as np
@@ -25,7 +25,7 @@ for f in os.listdir(dir+"/Questioned/"):
         feat = np.array(mat['feature_vector'][0][:])
         x_test.append(feat)
 
-y_true = np.concatenate([np.ones((30)) * -1, np.ones((5))])
+y_true = np.concatenate([np.ones((35)) * -1, np.ones((5))])
 
 # Get predictions from OneClassSVM
 Y_test, Y_train, n_error_train = OneClassSVM(x_train, x_test)
