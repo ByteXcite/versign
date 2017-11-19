@@ -1,5 +1,7 @@
 package com.bytexcite.versign.controller;
 
+import android.util.Log;
+
 import com.bytexcite.versign.model.entity.SignatureImage;
 import com.bytexcite.versign.model.entity.VerificationRequest;
 import com.bytexcite.versign.model.entity.VerificationResponse;
@@ -7,6 +9,7 @@ import com.bytexcite.versign.util.WebServer;
 
 import java.net.MalformedURLException;
 
+import sfllhkhan95.android.rest.HttpMethod;
 import sfllhkhan95.android.rest.HttpRequest;
 
 
@@ -28,12 +31,21 @@ public class VerificationController {
 
     public HttpRequest<VerificationResponse> getVerificationRequest(
             String customerID, SignatureImage signatureImage) {
-        HttpRequest<VerificationResponse> request = new HttpRequest<>(
-                server,
-                "VerificationController.php",
-                VerificationResponse.class
-        );
-        request.setPayload(new VerificationRequest(customerID, signatureImage));
-        return request;
+        return new VerifyRequest(new VerificationRequest(customerID, signatureImage));
+    }
+
+    private class VerifyRequest extends HttpRequest<VerificationResponse> {
+
+        VerifyRequest(VerificationRequest request) {
+            super(server, "VerificationController.php", VerificationResponse.class);
+            setMethod(HttpMethod.POST);
+            setPayload(request);
+        }
+
+        @Override
+        protected void onExecuteFailed(Exception ex) {
+            ex.printStackTrace();
+            Log.e("DroidREST", ex.getMessage());
+        }
     }
 }

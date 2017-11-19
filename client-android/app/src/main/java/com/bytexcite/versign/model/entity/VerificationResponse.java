@@ -10,15 +10,15 @@ package com.bytexcite.versign.model.entity;
  */
 public class VerificationResponse {
 
-    private boolean isGenuine;
+    private boolean genuine;
     private Customer belongsTo;
 
     public boolean isGenuine() {
-        return isGenuine;
+        return genuine;
     }
 
     public void setGenuine(boolean genuine) {
-        isGenuine = genuine;
+        genuine = genuine;
     }
 
     public Customer getBelongsTo() {

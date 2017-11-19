@@ -1,6 +1,8 @@
 package com.bytexcite.versign.model.entity;
 
 
+import java.io.Serializable;
+
 /**
  * VerificationRequest is sent to the server with a customer's identifier and a questioned
  * signature for verification.
@@ -8,7 +10,7 @@ package com.bytexcite.versign.model.entity;
  * @author saifkhichi96
  * @version 1.0
  */
-public class VerificationRequest {
+public class VerificationRequest implements Serializable {
 
     private final String customerID;
     private final SignatureImage questionedSignature;
