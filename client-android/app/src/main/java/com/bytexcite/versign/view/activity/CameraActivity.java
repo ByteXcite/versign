@@ -215,7 +215,7 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 preparingSignatureDialog.hide();
 
                 ImageView sign = (ImageView) verifyingSignatureDialog.findViewById(R.id.signature);
-                sign.setImageBitmap(signatureImage.bitmap);
+                // sign.setImageBitmap(signatureImage.bitmap);
 
                 verifyingSignatureDialog.show();
 

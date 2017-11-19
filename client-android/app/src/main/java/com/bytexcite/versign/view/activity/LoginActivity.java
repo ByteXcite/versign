@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -26,7 +25,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private ViewGroup rootView;
-    private Button loginButton;
 
     private String credentialsError;
     private String signInFailure;
@@ -45,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         rootView = (ViewGroup) findViewById(R.id.activity_login);
-        loginButton = (Button) findViewById(R.id.loginButton);
 
         credentialsError = getString(R.string.credentialsError);
         signInFailure = getString(R.string.signInFailure);
@@ -58,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         LoginController loginController = new LoginController(this);
-        loginButton.setOnClickListener(loginController);
+        findViewById(R.id.loginButton).setOnClickListener(loginController);
     }
 
     public String getUsername() {
@@ -76,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
     public void signInSuccess() {
         Toast.makeText(this, signInSuccess, Toast.LENGTH_SHORT).show();
 
-        Intent launchCameraActivity = new Intent(LoginActivity.this, CameraActivity.class);
+        Intent launchCameraActivity = new Intent(LoginActivity.this, MenuMainActivity.class);
         startActivity(launchCameraActivity);
     }
 

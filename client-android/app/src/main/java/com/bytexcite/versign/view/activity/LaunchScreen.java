@@ -91,9 +91,7 @@ public class LaunchScreen extends AppCompatActivity {
         LaunchScreenController(long delay) {
             this.delay = delay;
             showLoginForm = new Intent(LaunchScreen.this, LoginActivity.class);
-            launchCameraActivity = new Intent(LaunchScreen.this, CameraActivity.class);
-
-
+            launchCameraActivity = new Intent(LaunchScreen.this, MenuMainActivity.class);
         }
 
         private void startNextActivity(Intent intent) {

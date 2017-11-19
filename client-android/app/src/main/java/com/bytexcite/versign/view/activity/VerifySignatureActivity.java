@@ -1,7 +1,7 @@
 package com.bytexcite.versign.view.activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -11,10 +11,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bytexcite.versign.R;
+import com.bytexcite.versign.model.entity.SignatureImage;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -22,88 +22,99 @@ import java.io.FileInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+public class VerifySignatureActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//    }
     private static int RESULT_LOAD_IMAGE = 1;
-
+    private SignatureImage signature = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_verify_signature);
 
-        Button buttonLoadImage = (Button) findViewById(R.id.buttonLoadPicture);
-        buttonLoadImage.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.buttonChoosePicture).setOnClickListener(this);
+        findViewById(R.id.buttonTakePicture).setOnClickListener(this);
+        findViewById(R.id.verifySignature).setOnClickListener(this);
 
-            @Override
-            public void onClick(View arg0) {
-
-                Intent i = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
-            }
-        });
-
-//        Button buttonUploadImage = (Button) findViewById(R.id.buttonUploadPicture);
-//        buttonLoadImage.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View arg0) {
-//
-//                UploadFileAsync task = new UploadFileAsync();
-//                task.execute(new String[] { "http://www.vogella.com/index.html" });
-//
-//            }
-//        });
+        findViewById(R.id.loadingSign).setVisibility(View.GONE);
+        findViewById(R.id.loadingComplete).setVisibility(View.GONE);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            Cursor cursor = getContentResolver().query(selectedImage,
-                    filePathColumn, null, null, null);
-            cursor.moveToFirst();
+            ImageView signatureView = (ImageView) findViewById(R.id.sigantureImage);
+            findViewById(R.id.loadingSign).setVisibility(View.VISIBLE);
+            findViewById(R.id.loadingComplete).setVisibility(View.GONE);
 
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-
-
-            ImageView imageView = (ImageView) findViewById(R.id.imgView);
-
+            // Show selected image
             Uri selectedImageUri = data.getData();
-            imageView.setImageURI(selectedImageUri);
+            signatureView.setImageURI(selectedImageUri);
 
-            Drawable drawable = imageView.getDrawable();
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            // Get bitmap
+            Drawable drawable = signatureView.getDrawable();
+            final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
-            UploadFileAsync task = new UploadFileAsync();
-            new UploadFileAsync().execute(selectedImageUri.toString());
+            // Extract pixel data from bitmap
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    signature = new SignatureImage(bitmap);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            findViewById(R.id.loadingSign).setVisibility(View.GONE);
+                            findViewById(R.id.loadingComplete).setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+            }).start();
         }
 
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonChoosePicture:
+                Intent i = new Intent(
+                        Intent.ACTION_PICK,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+                break;
+
+            case R.id.buttonTakePicture:
+                break;
+
+            case R.id.verifySignature:
+                if (signature == null) {
+                    // Show 'select signature image' dialog
+                    new AlertDialog.Builder(VerifySignatureActivity.this)
+                            .setTitle("Signature Not Selected")
+                            .setMessage("Please select a signature image to verify.")
+                            .create()
+                            .show();
+                } else {
+                    // TODO: Initiate verification request
+                    // UploadFileAsync task = new UploadFileAsync();
+                    // new UploadFileAsync().execute(selectedImageUri.toString());
+                    // task.execute(new String[]{"http://www.vogella.com/index.html"});
+                }
+                break;
+        }
     }
 
     private class UploadFileAsync extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-
             try {
-//                String sourceFileUri = "/mnt/sdcard/abc.png";
+                // String sourceFileUri = "/mnt/sdcard/abc.png";
                 String sourceFileUri = params[0];
 
                 HttpURLConnection conn = null;
@@ -214,17 +225,5 @@ public class MainActivity extends AppCompatActivity {
             return "Executed";
         }
 
-        @Override
-        protected void onPostExecute(String result) {
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
     }
 }
