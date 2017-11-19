@@ -8,14 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.bytexcite.versign.R;
 import com.bytexcite.versign.model.entity.SessionData;
-
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,25 +30,6 @@ public class LaunchScreen extends AppCompatActivity {
      * SessionData object containing data of currently signed in user
      */
     private SessionData sessionData;
-
-    /**
-     * Loader callback used for loading OpenCV.
-     */
-    private BaseLoaderCallback openCVLoader = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS: {
-                    Log.i("OpenCV", "OpenCV loaded successfully");
-                }
-                break;
-                default: {
-                    super.onManagerConnected(status);
-                }
-                break;
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,22 +78,6 @@ public class LaunchScreen extends AppCompatActivity {
                     finish();
                 }
                 break;
-        }
-    }
-
-    /**
-     * Overrider of onResume method of Activity class. Called when activity starts/resumes.
-     * Loads OpenCV if it is not already loaded.
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (OpenCVLoader.initDebug()) {
-            Log.d("OpenCV", "OpenCV library found inside package. Using it!");
-            openCVLoader.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        } else {
-            Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, openCVLoader);
         }
     }
 
