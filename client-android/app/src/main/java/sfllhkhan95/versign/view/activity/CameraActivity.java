@@ -1,6 +1,7 @@
 package sfllhkhan95.versign.view.activity;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -210,6 +212,10 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onPostExecute(Void response) {
                 preparingSignatureDialog.hide();
+
+                ImageView sign = (ImageView) verifyingSignatureDialog.findViewById(R.id.signature);
+                sign.setImageBitmap(signatureImage.bitmap);
+
                 verifyingSignatureDialog.show();
 
                 String ID = customerID.getText().toString().trim();
@@ -224,9 +230,9 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onResponseReceived(@Nullable VerificationResponse verificationResponse) {
+        verifyingSignatureDialog.hide();
         if (verificationResponse != null) {
             if (verificationResponse.isGenuine()) {
-                verifyingSignatureDialog.hide();
                 verificationSuccessDialog.show();
 
                 Customer belongsTo = verificationResponse.getBelongsTo();
@@ -234,22 +240,16 @@ public class CameraActivity extends AppCompatActivity implements View.OnClickLis
                 ((TextView) verificationSuccessDialog.findViewById(R.id.customerDetails))
                         .setText("Customer: " + belongsTo.getFirstName());
             } else {
-                verifyingSignatureDialog.hide();
                 verificationFailureDialog.show();
             }
         } else {
-            verificationErrorDialog.setContentView(R.layout.dialog_verification_error);
-        }
-
-        releaseCamera();
-    }
-
-    private void releaseCamera() {
-        if (camera != null) {
-            camera.release();
-            camera = null;
-            cameraLayout.removeAllViews();
-            recreate();
+            verificationErrorDialog.show();
+            verificationErrorDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    recreate();
+                }
+            });
         }
     }
 
