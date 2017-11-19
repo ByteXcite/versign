@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    tools:context="sfllhkhan95.versign.view.activity.CameraActivity">
+    tools:context=".view.activity.CameraActivity">
 
     <FrameLayout
         android:id="@+id/cameraView"

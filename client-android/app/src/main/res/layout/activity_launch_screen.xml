@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    tools:context="sfllhkhan95.versign.view.activity.LaunchScreen">
+    tools:context=".view.activity.LaunchScreen">
 
     <LinearLayout
         android:layout_width="150dp"
