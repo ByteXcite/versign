@@ -16,21 +16,45 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.LaunchScreen">
+
+        <provider
+            android:name=".util.GenericFileProvider"
+            android:authorities="${applicationId}.com.bytexcite.versign.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".view.activity.LaunchScreen"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activity.CameraActivity" />
-        <activity android:name=".view.activity.LoginActivity" />
-        <activity android:name=".view.activity.MenuMainActivity" />
-        <activity android:name=".view.activity.RegisterUserActivity" />
-        <activity android:name=".view.activity.VerifySignatureActivity" />
+
+        <activity
+            android:name=".view.activity.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.activity.MenuMainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.activity.RegisterUserActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".view.activity.VerifySignatureActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>

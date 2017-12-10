@@ -3,12 +3,15 @@ package com.bytexcite.versign.view.activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,6 +21,8 @@ import com.bytexcite.versign.controller.VerificationController;
 import com.bytexcite.versign.model.entity.SignatureImage;
 import com.bytexcite.versign.model.entity.VerificationResponse;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import sfllhkhan95.android.rest.ResponseHandler;
@@ -25,10 +30,13 @@ import sfllhkhan95.android.rest.ResponseHandler;
 public class VerifySignatureActivity extends AppCompatActivity
         implements View.OnClickListener, ResponseHandler<VerificationResponse> {
 
-    private static int RESULT_LOAD_IMAGE = 1;
+    private static final int REQUEST_PICK_IMAGE = 1;
+    private static final int REQUEST_TAKE_IMAGE = 2;
 
     private SignatureImage signature = null;
     private boolean isLoading = false;
+
+    private File mPhotoFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,27 +56,44 @@ public class VerifySignatureActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+        Bitmap bitmap = null;
+        switch (requestCode) {
+            case REQUEST_PICK_IMAGE:
+                if (resultCode == RESULT_OK && null != data) {
+                    // Show selected image
+                    ImageView signatureView = (ImageView) findViewById(R.id.sigantureImage);
+
+                    Uri selectedImageUri = data.getData();
+                    signatureView.setImageURI(selectedImageUri);
+
+                    // Get bitmap
+                    Drawable drawable = signatureView.getDrawable();
+                    bitmap = ((BitmapDrawable) drawable).getBitmap();
+                }
+                break;
+            case REQUEST_TAKE_IMAGE:
+                if (resultCode == RESULT_OK) {
+                    bitmap = BitmapFactory.decodeFile(mPhotoFile.getAbsolutePath());
+
+                    // Show selected image
+                    ImageView signatureView = (ImageView) findViewById(R.id.sigantureImage);
+                    signatureView.setImageBitmap(bitmap);
+                }
+                break;
+        }
+
+        if (bitmap != null) {
             findViewById(R.id.loadingSign).setVisibility(View.VISIBLE);
             findViewById(R.id.loadingComplete).setVisibility(View.GONE);
             signature = null;
 
-            // Show selected image
-            ImageView signatureView = (ImageView) findViewById(R.id.sigantureImage);
-
-            Uri selectedImageUri = data.getData();
-            signatureView.setImageURI(selectedImageUri);
-
-            // Get bitmap
-            Drawable drawable = signatureView.getDrawable();
-            final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-
             // Extract pixel data from bitmap
             isLoading = true;
+            final Bitmap finalBitmap = bitmap;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    signature = new SignatureImage(bitmap);
+                    signature = new SignatureImage(finalBitmap);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -86,6 +111,12 @@ public class VerifySignatureActivity extends AppCompatActivity
                 }
             }).start();
         }
+
+        // Remove temporary file
+        if (mPhotoFile != null && mPhotoFile.exists()) {
+            mPhotoFile.delete();
+            mPhotoFile = null;
+        }
     }
 
     @Override
@@ -97,17 +128,17 @@ public class VerifySignatureActivity extends AppCompatActivity
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                    startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    startActivityForResult(i, REQUEST_PICK_IMAGE);
                 }
                 break;
 
             case R.id.buttonTakePicture:
                 if (!isLoading) {
-                    Intent i = new Intent(
-                            getApplicationContext(),
-                            CameraActivity.class);
-
-                    startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    try {
+                        dispatchTakePictureIntent();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
                 break;
 
@@ -170,6 +201,58 @@ public class VerifySignatureActivity extends AppCompatActivity
                     .setMessage("Signature verification failed. Please try again.")
                     .create()
                     .show();
+        }
+    }
+
+    /**
+     * Create output file where captured image will be written.
+     *
+     * @return output file
+     * @throws RuntimeException execption thrown if output file cannot be created
+     */
+    @Nullable
+    private File createImageFile() throws IOException {
+        // Create a directory name for image storage
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                getString(R.string.app_name)
+        );
+
+        // If directory name does not exist, create required directories
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                throw new IOException();
+            }
+        }
+
+        // Create and return an image file name
+        return new File(mediaStorageDir.getPath() + File.separator
+                + "_TMP_VERSIGN_LAST_SCAN.jpg");
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                mPhotoFile = photoFile;
+
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        getApplicationContext().getPackageName() + ".com.bytexcite.versign.provider",
+                        mPhotoFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                startActivityForResult(cameraIntent, REQUEST_TAKE_IMAGE);
+            }
         }
     }
 
