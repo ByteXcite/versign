@@ -31,7 +31,7 @@
         </provider>
 
         <activity
-            android:name=".view.activity.LaunchScreen"
+            android:name=".view.LaunchScreen"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,19 +40,19 @@
         </activity>
 
         <activity
-            android:name=".view.activity.LoginActivity"
+            android:name=".view.LoginActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".view.activity.MenuMainActivity"
+            android:name=".view.MenuMainActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".view.activity.RegisterUserActivity"
+            android:name=".view.RegisterUserActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".view.activity.VerifySignatureActivity"
+            android:name=".view.VerifySignatureActivity"
             android:screenOrientation="portrait" />
 
     </application>

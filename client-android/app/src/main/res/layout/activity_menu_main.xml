@@ -6,7 +6,7 @@
     android:background="@drawable/bg"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".view.activity.RegisterUserActivity">
+    tools:context=".view.RegisterUserActivity">
 
     <LinearLayout
         android:id="@+id/registerUser"

@@ -1,4 +1,4 @@
-package com.bytexcite.versign.view.activity;
+package com.bytexcite.versign.view;
 
 import android.Manifest;
 import android.content.Intent;
