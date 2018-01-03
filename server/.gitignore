@@ -2,9 +2,8 @@
 .idea/
 
 # Datasets
-sigver_wiwd/
-data/
-features/
+db/
+libs/
 
 # Build files
 *.pyc

@@ -3,7 +3,7 @@
 # inDir by generating four new images for each image in the input data. Augmentation is #
 # performed by performing minor transformations (rotation, etc.) on input data.         #
 #########################################################################################
-from CertSign import ImageProcessor
+from preprocess import ImageProcessor
 from PIL import Image
 
 import cv2, random, os, numpy as np, sys
