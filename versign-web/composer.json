@@ -1,6 +1,6 @@
 {
-  "name": "bytexcite/versign-admin",
-  "description": "Admin Panel of Offline Signature Verification System for Banks.",
+  "name": "bytexcite/versign-web",
+  "description": "Web-based client of the VerSign system.",
   "minimum-stability": "dev",
   "license": "open-source",
   "authors": [
