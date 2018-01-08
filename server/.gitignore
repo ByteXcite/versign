@@ -11,6 +11,9 @@ build/
 out/
 target/
 
+# Third-party code
+vendor/
+
 # OS configuration files
 Desktop.ini
 .DS_STORE
