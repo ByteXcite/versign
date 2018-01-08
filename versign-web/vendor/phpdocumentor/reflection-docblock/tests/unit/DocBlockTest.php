@@ -1,11 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of phpDocumentor.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @copyright 2010-2018 Mike van Riel<mike@phpdoc.org>
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
@@ -13,22 +14,32 @@
 namespace phpDocumentor\Reflection;
 
 use Mockery as m;
+use phpDocumentor\Reflection\DocBlock\Tags\Deprecated;
 use phpDocumentor\Reflection\Types\Context;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass phpDocumentor\Reflection\DocBlock
  * @covers ::<private>
  * @uses \Webmozart\Assert\Assert
  */
-class DocBlockTest extends \PHPUnit_Framework_TestCase
+class DocBlockTest extends TestCase
 {
+    /**
+     * Call Mockery::close after each test.
+     */
+    public function tearDown(): void
+    {
+        m::close();
+    }
+
     /**
      * @covers ::__construct
      * @covers ::getSummary
      *
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testDocBlockCanHaveASummary()
+    public function testDocBlockCanHaveASummary(): void
     {
         $summary = 'This is a summary';
 
@@ -39,32 +50,17 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getSummary
      *
-     * @expectedException \InvalidArgumentException
+     * @uses \phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testExceptionIsThrownIfSummaryIsNotAString()
+    public function testDocBlockCanHaveEllipsisInSummary(): void
     {
-        new DocBlock([]);
-    }
+        $summary = 'This is a short (...) description.';
 
-    /**
-     * @covers ::__construct
-     *
-     * @expectedException \InvalidArgumentException
-     */
-    public function testExceptionIsThrownIfTemplateStartIsNotABoolean()
-    {
-        new DocBlock('', null, [], null, null, ['is not boolean']);
-    }
+        $fixture = new DocBlock($summary);
 
-    /**
-     * @covers ::__construct
-     *
-     * @expectedException \InvalidArgumentException
-     */
-    public function testExceptionIsThrownIfTemplateEndIsNotABoolean()
-    {
-        new DocBlock('', null, [], null, null, false, ['is not boolean']);
+        $this->assertSame($summary, $fixture->getSummary());
     }
 
     /**
@@ -73,7 +69,7 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
      *
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testDocBlockCanHaveADescription()
+    public function testDocBlockCanHaveADescription(): void
     {
         $description = new DocBlock\Description('');
 
@@ -89,10 +85,10 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      * @uses \phpDocumentor\Reflection\DocBlock\Tag
      */
-    public function testDocBlockCanHaveTags()
+    public function testDocBlockCanHaveTags(): void
     {
         $tags = [
-            m::mock(DocBlock\Tag::class)
+            m::mock(DocBlock\Tag::class),
         ];
 
         $fixture = new DocBlock('', null, $tags);
@@ -103,18 +99,15 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getTags
-     *
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      * @uses \phpDocumentor\Reflection\DocBlock\Tag
-     *
-     * @expectedException \InvalidArgumentException
      */
-    public function testDocBlockAllowsOnlyTags()
+    public function testDocBlockAllowsOnlyTags(): void
     {
+        $this->expectException('InvalidArgumentException');
         $tags = [
-            null
+            null,
         ];
-
         $fixture = new DocBlock('', null, $tags);
     }
 
@@ -126,7 +119,7 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      * @uses \phpDocumentor\Reflection\DocBlock\Tag
      */
-    public function testFindTagsInDocBlockByName()
+    public function testFindTagsInDocBlockByName(): void
     {
         $tag1 = m::mock(DocBlock\Tag::class);
         $tag2 = m::mock(DocBlock\Tag::class);
@@ -145,25 +138,13 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getTagsByName
-     * @uses \phpDocumentor\Reflection\DocBlock\Description
-     * @expectedException \InvalidArgumentException
-     */
-    public function testExceptionIsThrownIfNameForTagsIsNotString()
-    {
-        $fixture = new DocBlock();
-        $fixture->getTagsByName([]);
-    }
-
-    /**
-     * @covers ::__construct
      * @covers ::hasTag
      *
      * @uses \phpDocumentor\Reflection\DocBlock::getTags
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      * @uses \phpDocumentor\Reflection\DocBlock\Tag
      */
-    public function testCheckIfThereAreTagsWithAGivenName()
+    public function testCheckIfThereAreTagsWithAGivenName(): void
     {
         $tag1 = m::mock(DocBlock\Tag::class);
         $tag2 = m::mock(DocBlock\Tag::class);
@@ -182,24 +163,12 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::hasTag
-     * @uses \phpDocumentor\Reflection\DocBlock\Description
-     * @expectedException \InvalidArgumentException
-     */
-    public function testExceptionIsThrownIfNameForCheckingTagsIsNotString()
-    {
-        $fixture = new DocBlock();
-        $fixture->hasTag([]);
-    }
-
-    /**
-     * @covers ::__construct
      * @covers ::getContext
      *
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      * @uses \phpDocumentor\Reflection\Types\Context
      */
-    public function testDocBlockKnowsInWhichNamespaceItIsAndWhichAliasesThereAre()
+    public function testDocBlockKnowsInWhichNamespaceItIsAndWhichAliasesThereAre(): void
     {
         $context = new Context('');
 
@@ -215,7 +184,7 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      * @uses \phpDocumentor\Reflection\Location
      */
-    public function testDocBlockKnowsAtWhichLineItIs()
+    public function testDocBlockKnowsAtWhichLineItIs(): void
     {
         $location = new Location(10);
 
@@ -230,7 +199,7 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
      *
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testDocBlockKnowsIfItIsTheStartOfADocBlockTemplate()
+    public function testDocBlockKnowsIfItIsTheStartOfADocBlockTemplate(): void
     {
         $fixture = new DocBlock('', null, [], null, null, true);
 
@@ -243,10 +212,34 @@ class DocBlockTest extends \PHPUnit_Framework_TestCase
      *
      * @uses \phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testDocBlockKnowsIfItIsTheEndOfADocBlockTemplate()
+    public function testDocBlockKnowsIfItIsTheEndOfADocBlockTemplate(): void
     {
         $fixture = new DocBlock('', null, [], null, null, false, true);
 
         $this->assertTrue($fixture->isTemplateEnd());
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::removeTag
+     *
+     * @uses \phpDocumentor\Reflection\DocBlock\Tags\Deprecated
+     */
+    public function testRemoveTag(): void
+    {
+        $someTag = new Deprecated();
+        $anotherTag = new Deprecated();
+
+        $fixture = new DocBlock('', null, [$someTag]);
+
+        $this->assertCount(1, $fixture->getTags());
+
+        $fixture->removeTag($anotherTag);
+
+        $this->assertCount(1, $fixture->getTags());
+
+        $fixture->removeTag($someTag);
+
+        $this->assertCount(0, $fixture->getTags());
     }
 }

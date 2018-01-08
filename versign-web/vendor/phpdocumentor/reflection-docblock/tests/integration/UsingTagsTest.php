@@ -1,28 +1,37 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of phpDocumentor.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @copyright 2010-2018 Mike van Riel<mike@phpdoc.org>
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
 
 namespace phpDocumentor\Reflection;
 
+use Mockery as m;
 use phpDocumentor\Reflection\DocBlock\Description;
-use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
-use phpDocumentor\Reflection\DocBlock\Tags\See;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversNothing
  */
-class UsingTagsTest extends \PHPUnit_Framework_TestCase
+class UsingTagsTest extends TestCase
 {
-    public function testAddingYourOwnTagUsingAStaticMethodAsFactory()
+    /**
+     * Call Mockery::close after each test.
+     */
+    public function tearDown(): void
+    {
+        m::close();
+    }
+
+    public function testAddingYourOwnTagUsingAStaticMethodAsFactory(): void
     {
         /**
          * @var object[] $customTagObjects
@@ -33,7 +42,7 @@ class UsingTagsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(\MyTag::class, $customTagObjects[0]);
         $this->assertSame('my-tag', $customTagObjects[0]->getName());
-        $this->assertSame('I have a description', (string)$customTagObjects[0]->getDescription());
+        $this->assertSame('I have a description', (string) $customTagObjects[0]->getDescription());
         $this->assertSame($docComment, $reconstitutedDocComment);
     }
 }

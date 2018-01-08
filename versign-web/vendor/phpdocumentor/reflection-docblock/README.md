@@ -10,16 +10,12 @@ that is 100% compatible with the [PHPDoc standard](http://phpdoc.org/docs/latest
 With this component, a library can provide support for annotations via DocBlocks
 or otherwise retrieve information that is embedded in a DocBlock.
 
-> **Note**: *this is a core component of phpDocumentor and is constantly being
-> optimized for performance.*
-
 Installation
 ------------
 
-You can install the component in the following ways:
-
-* Use the official Github repository (https://github.com/phpDocumentor/ReflectionDocBlock)
-* Via Composer (http://packagist.org/packages/phpdocumentor/reflection-docblock)
+```bash
+composer require phpdocumentor/reflection-docblock
+```
 
 Usage
 -----
@@ -31,8 +27,8 @@ instantiated using its `createInstance` factory method like this:
 $factory  = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
 ```
 
-Then we can use the `create` method of the factory to interpret the DocBlock. 
-Please note that it is also possible to provide a class that has the 
+Then we can use the `create` method of the factory to interpret the DocBlock.
+Please note that it is also possible to provide a class that has the
 `getDocComment()` method, such as an object of type `ReflectionClass`, the
 create method will read that if it exists.
 
@@ -52,18 +48,20 @@ $docblock = $factory->create($docComment);
 ```
 
 The `create` method will yield an object of type `\phpDocumentor\Reflection\DocBlock`
-whose methods can be queried as shown in the following example.
+whose methods can be queried:
 
 ```php
-// Should contain the summary for this DocBlock
+// Contains the summary for this DocBlock
 $summary = $docblock->getSummary();
 
-// Contains an object of type \phpDocumentor\Reflection\DocBlock\Description; 
-// you can either cast it to string or use the render method to get a string 
-// representation of the Description.
+// Contains \phpDocumentor\Reflection\DocBlock\Description object
 $description = $docblock->getDescription();
+
+// You can either cast it to string
+$description = (string) $docblock->getDescription();
+
+// Or use the render method to get a string representation of the Description.
+$description = $docblock->getDescription()->render();
 ```
 
-> For more examples it would be best to review the scripts in the `/examples` 
-> folder.
-
+> For more examples it would be best to review the scripts in the [`/examples` folder](/examples).

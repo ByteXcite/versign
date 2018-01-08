@@ -1,28 +1,64 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of phpDocumentor.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @copyright 2010-2018 Mike van Riel<mike@phpdoc.org>
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
 
 namespace phpDocumentor\Reflection;
 
+use Mockery as m;
 use phpDocumentor\Reflection\DocBlock\Description;
 use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Tags\See;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversNothing
  */
-class InterpretingDocBlocksTest extends \PHPUnit_Framework_TestCase
+class InterpretingDocBlocksTest extends TestCase
 {
-    public function testInterpretingASimpleDocBlock()
+    /**
+     * Call Mockery::close after each test.
+     */
+    public function tearDown(): void
+    {
+        m::close();
+    }
+
+    public function testInterpretingSummaryWithEllipsis(): void
+    {
+        $docblock = <<<DOCBLOCK
+/**
+ * This is a short (...) description.
+ *
+ * This is a long description.
+ *
+ * @return void
+ */
+DOCBLOCK;
+
+        $factory = DocBlockFactory::createInstance();
+        $phpdoc = $factory->create($docblock);
+
+        $summary = 'This is a short (...) description.';
+        $description = 'This is a long description.';
+
+        $this->assertInstanceOf(DocBlock::class, $phpdoc);
+        $this->assertSame($summary, $phpdoc->getSummary());
+        $this->assertSame($description, $phpdoc->getDescription()->render());
+        $this->assertCount(1, $phpdoc->getTags());
+        $this->assertTrue($phpdoc->hasTag('return'));
+    }
+
+    public function testInterpretingASimpleDocBlock(): void
     {
         /**
          * @var DocBlock    $docblock
@@ -45,7 +81,7 @@ DESCRIPTION;
         $this->assertEmpty($docblock->getTags());
     }
 
-    public function testInterpretingTags()
+    public function testInterpretingTags(): void
     {
         /**
          * @var DocBlock $docblock
@@ -63,11 +99,11 @@ DESCRIPTION;
         $this->assertInstanceOf(See::class, $seeTags[0]);
 
         $seeTag = $seeTags[0];
-        $this->assertSame('\\' . StandardTagFactory::class, (string)$seeTag->getReference());
-        $this->assertSame('', (string)$seeTag->getDescription());
+        $this->assertSame('\\' . StandardTagFactory::class, (string) $seeTag->getReference());
+        $this->assertSame('', (string) $seeTag->getDescription());
     }
 
-    public function testDescriptionsCanEscapeAtSignsAndClosingBraces()
+    public function testDescriptionsCanEscapeAtSignsAndClosingBraces(): void
     {
         /**
          * @var string      $docComment
@@ -78,7 +114,8 @@ DESCRIPTION;
          */
 
         include(__DIR__ . '/../../examples/playing-with-descriptions/02-escaping.php');
-        $this->assertSame(<<<'DESCRIPTION'
+        $this->assertSame(
+            <<<'DESCRIPTION'
 You can escape the @-sign by surrounding it with braces, for example: @. And escape a closing brace within an
 inline tag by adding an opening brace in front of it like this: }.
 
@@ -91,7 +128,6 @@ Do note that an {@internal inline tag that has an opening brace ({) does not bre
 DESCRIPTION
             ,
             $foundDescription
-        )
-        ;
+        );
     }
 }

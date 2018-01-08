@@ -1,11 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of phpDocumentor.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @copyright 2010-2018 Mike van Riel<mike@phpdoc.org>
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
@@ -23,7 +24,7 @@ abstract class BaseTag implements DocBlock\Tag
     /** @var string Name of the tag */
     protected $name = '';
 
-    /** @var Description|null Description of the tag. */
+    /** @var Description|string|null Description of the tag. */
     protected $description;
 
     /**
@@ -31,7 +32,7 @@ abstract class BaseTag implements DocBlock\Tag
      *
      * @return string The name of this tag.
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -41,7 +42,7 @@ abstract class BaseTag implements DocBlock\Tag
         return $this->description;
     }
 
-    public function render(Formatter $formatter = null)
+    public function render(?Formatter $formatter = null): string
     {
         if ($formatter === null) {
             $formatter = new Formatter\PassthroughFormatter();

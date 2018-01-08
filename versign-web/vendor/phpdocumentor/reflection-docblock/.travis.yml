@@ -1,32 +1,32 @@
 language: php
+
 php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
-  - nightly
+  - 7.1
+  - 7.2
 
 matrix:
-  allow_failures:
-    - php:
-        - hhvm
-        - nightly
+  include:
+    - php: 7.1
+      env: ECS=true
+    - php: 7.1
+      env: PHPSTAN=true
 
 cache:
   directories:
     - $HOME/.composer/cache
 
-script:
-  - vendor/bin/phpunit --coverage-clover=coverage.clover -v
-  - composer update --no-interaction --prefer-source
-  - vendor/bin/phpunit -v
-
-before_script:
+install:
   - composer install --no-interaction
+  - if [[ $ECS != "" ]]; then composer create-project symplify/easy-coding-standard temp/ecs; fi
+
+script:
+  - vendor/bin/phpunit --coverage-clover=coverage.xml -v
+  - if [[ $ECS != "" ]]; then temp/ecs/bin/ecs check src tests; fi
+  - if [[ $PHPSTAN != "" ]]; then vendor/bin/phpstan analyse src --level max --configuration phpstan.neon; fi
 
 after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - wget https://github.com/satooshi/php-coveralls/releases/download/v1.0.1/coveralls.phar;
+  - php coveralls.phar --verbose;
 
 notifications:
   irc: "irc.freenode.org#phpdocumentor"

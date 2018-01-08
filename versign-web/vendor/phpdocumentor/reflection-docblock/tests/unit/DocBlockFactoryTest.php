@@ -1,11 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * This file is part of phpDocumentor.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @copyright 2010-2018 Mike van Riel<mike@phpdoc.org>
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
@@ -19,6 +20,7 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\TagFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Param;
 use phpDocumentor\Reflection\Types\Context;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass phpDocumentor\Reflection\DocBlockFactory
@@ -26,15 +28,23 @@ use phpDocumentor\Reflection\Types\Context;
  * @uses               \Webmozart\Assert\Assert
  * @uses               phpDocumentor\Reflection\DocBlock
  */
-class DocBlockFactoryTest extends \PHPUnit_Framework_TestCase
+class DocBlockFactoryTest extends TestCase
 {
+    /**
+     * Call Mockery::close after each test.
+     */
+    public function tearDown(): void
+    {
+        m::close();
+    }
+
     /**
      * @covers ::__construct
      * @covers ::createInstance
      * @uses \phpDocumentor\Reflection\DocBlock\StandardTagFactory
      * @uses \phpDocumentor\Reflection\DocBlock\DescriptionFactory
      */
-    public function testCreateFactoryUsingFactoryMethod()
+    public function testCreateFactoryUsingFactoryMethod(): void
     {
         $fixture = DocBlockFactory::createInstance();
 
@@ -46,11 +56,11 @@ class DocBlockFactoryTest extends \PHPUnit_Framework_TestCase
      * @covers ::create
      * @uses   phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testCreateDocBlockFromReflection()
+    public function testCreateDocBlockFromReflection(): void
     {
         $fixture = new DocBlockFactory(m::mock(DescriptionFactory::class), m::mock(TagFactory::class));
 
-        $docBlock       = '/** This is a DocBlock */';
+        $docBlock = '/** This is a DocBlock */';
         $classReflector = m::mock(\ReflectionClass::class);
         $classReflector->shouldReceive('getDocComment')->andReturn($docBlock);
         $docblock = $fixture->create($classReflector);
@@ -68,7 +78,7 @@ class DocBlockFactoryTest extends \PHPUnit_Framework_TestCase
      * @covers ::create
      * @uses   phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testCreateDocBlockFromStringWithDocComment()
+    public function testCreateDocBlockFromStringWithDocComment(): void
     {
         $fixture = new DocBlockFactory(m::mock(DescriptionFactory::class), m::mock(TagFactory::class));
 
@@ -87,7 +97,7 @@ class DocBlockFactoryTest extends \PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @uses   phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testCreateDocBlockFromStringWithoutDocComment()
+    public function testCreateDocBlockFromStringWithoutDocComment(): void
     {
         $fixture = new DocBlockFactory(m::mock(DescriptionFactory::class), m::mock(TagFactory::class));
 
@@ -108,10 +118,10 @@ class DocBlockFactoryTest extends \PHPUnit_Framework_TestCase
      * @uses         phpDocumentor\Reflection\DocBlock\Description
      * @dataProvider provideSummaryAndDescriptions
      */
-    public function testSummaryAndDescriptionAreSeparated($given, $summary, $description)
+    public function testSummaryAndDescriptionAreSeparated($given, $summary, $description): void
     {
         $tagFactory = m::mock(TagFactory::class);
-        $fixture    = new DocBlockFactory(new DescriptionFactory($tagFactory), $tagFactory);
+        $fixture = new DocBlockFactory(new DescriptionFactory($tagFactory), $tagFactory);
 
         $docblock = $fixture->create($given);
 
@@ -125,10 +135,10 @@ class DocBlockFactoryTest extends \PHPUnit_Framework_TestCase
      * @uses phpDocumentor\Reflection\DocBlock\DescriptionFactory
      * @uses phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testDescriptionsRetainFormatting()
+    public function testDescriptionsRetainFormatting(): void
     {
         $tagFactory = m::mock(TagFactory::class);
-        $fixture    = new DocBlockFactory(new DescriptionFactory($tagFactory), $tagFactory);
+        $fixture = new DocBlockFactory(new DescriptionFactory($tagFactory), $tagFactory);
 
         $given = <<<DOCBLOCK
 /**
@@ -158,14 +168,14 @@ DESCRIPTION;
      * @uses phpDocumentor\Reflection\DocBlock\DescriptionFactory
      * @uses phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testTagsAreInterpretedUsingFactory()
+    public function testTagsAreInterpretedUsingFactory(): void
     {
         $tagString = <<<TAG
 @author Mike van Riel <me@mikevanriel.com> This is with
   multiline description.
 TAG;
 
-        $tag        = m::mock(Tag::class);
+        $tag = m::mock(Tag::class);
         $tagFactory = m::mock(TagFactory::class);
         $tagFactory->shouldReceive('create')->with($tagString, m::type(Context::class))->andReturn($tag);
 
@@ -192,7 +202,7 @@ DOCBLOCK;
             [
                 'This is a DocBlock. This should still be summary.',
                 'This is a DocBlock. This should still be summary.',
-                ''
+                '',
             ],
             [
                 <<<DOCBLOCK
@@ -201,7 +211,7 @@ This should be a Description.
 DOCBLOCK
                 ,
                 'This is a DocBlock.',
-                'This should be a Description.'
+                'This should be a Description.',
             ],
             [
                 <<<DOCBLOCK
@@ -211,7 +221,7 @@ This should be a Description.
 DOCBLOCK
                 ,
                 "This is a\nmultiline Summary.",
-                'This should be a Description.'
+                'This should be a Description.',
             ],
             [
                 <<<DOCBLOCK
@@ -221,7 +231,7 @@ This should be a Description.
 DOCBLOCK
                 ,
                 'This is a Summary without dot but with a whiteline',
-                'This should be a Description.'
+                'This should be a Description.',
             ],
             [
                 <<<DOCBLOCK
@@ -231,7 +241,7 @@ This should be a Description.
 DOCBLOCK
                 ,
                 'This is a Summary with dot and with a whiteline.',
-                'This should be a Description.'
+                'This should be a Description.',
             ],
         ];
     }
@@ -245,7 +255,7 @@ DOCBLOCK
      * @uses   phpDocumentor\Reflection\Types\Context
      * @uses   phpDocumentor\Reflection\DocBlock\Tags\Param
      */
-    public function testTagsWithContextNamespace()
+    public function testTagsWithContextNamespace(): void
     {
         $tagFactoryMock = m::mock(TagFactory::class);
         $fixture = new DocBlockFactory(m::mock(DescriptionFactory::class), $tagFactoryMock);
@@ -253,6 +263,8 @@ DOCBLOCK
 
         $tagFactoryMock->shouldReceive('create')->with(m::any(), $context)->andReturn(new Param('param'));
         $docblock = $fixture->create('/** @param MyType $param */', $context);
+
+        $this->assertInstanceOf(DocBlock::class, $docblock);
     }
 
     /**
@@ -262,7 +274,7 @@ DOCBLOCK
      * @uses phpDocumentor\Reflection\DocBlock\DescriptionFactory
      * @uses phpDocumentor\Reflection\DocBlock\Description
      */
-    public function testTagsAreFilteredForNullValues()
+    public function testTagsAreFilteredForNullValues(): void
     {
         $tagString = <<<TAG
 @author Mike van Riel <me@mikevanriel.com> This is with
