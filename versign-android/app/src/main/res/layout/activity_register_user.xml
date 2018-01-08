@@ -33,13 +33,6 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/placeholder" />
 
-                <ProgressBar
-                    android:id="@+id/loadingSign1"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true" />
-
                 <ImageView
                     android:id="@+id/loadingComplete1"
                     android:layout_width="30dp"
@@ -49,6 +42,13 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_loading_complete"
                     android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/loadingSign1"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true" />
 
             </RelativeLayout>
 
@@ -66,13 +66,6 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/placeholder" />
 
-                <ProgressBar
-                    android:id="@+id/loadingSign2"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true" />
-
                 <ImageView
                     android:id="@+id/loadingComplete2"
                     android:layout_width="30dp"
@@ -82,6 +75,13 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_loading_complete"
                     android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/loadingSign2"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true" />
 
             </RelativeLayout>
 
@@ -106,13 +106,6 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/placeholder" />
 
-                <ProgressBar
-                    android:id="@+id/loadingSign3"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true" />
-
                 <ImageView
                     android:id="@+id/loadingComplete3"
                     android:layout_width="30dp"
@@ -122,6 +115,13 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_loading_complete"
                     android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/loadingSign3"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true" />
 
             </RelativeLayout>
 
@@ -139,13 +139,6 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/placeholder" />
 
-                <ProgressBar
-                    android:id="@+id/loadingSign4"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true" />
-
                 <ImageView
                     android:id="@+id/loadingComplete4"
                     android:layout_width="30dp"
@@ -155,6 +148,13 @@
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_loading_complete"
                     android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/loadingSign4"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true" />
 
             </RelativeLayout>
 
@@ -221,8 +221,24 @@
         android:id="@+id/register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
+
+        <EditText
+            android:id="@+id/user_id"
+            style="@style/input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="ENTER USER'S ID"
+            android:inputType="number"
+            android:maxLength="13"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:textAllCaps="true" />
 
         <LinearLayout
             android:id="@+id/registerUser"

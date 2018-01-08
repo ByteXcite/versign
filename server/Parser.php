@@ -20,7 +20,7 @@ class Parser
      * @param string $className
      * @param stdClass $object
      * @throws InvalidArgumentException
-     * @return mixed new, typed object
+     * @return mixed new typed object
      */
     private static function cast($new, stdClass &$object)
     {

@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bytexcite.versign.R;
@@ -151,14 +152,26 @@ public class VerifySignatureActivity extends AppCompatActivity
                             .create()
                             .show();
                 } else {
+                    // Retrieve user ID
+                    String userId = ((EditText) findViewById(R.id.user_id)).getText().toString().trim();
+                    if (userId.isEmpty()) {
+                        // Show 'provide user id' dialog
+                        new AlertDialog.Builder(VerifySignatureActivity.this)
+                                .setTitle("Provide User ID")
+                                .setMessage("Please provide the ID of user to verify signature against.")
+                                .create()
+                                .show();
+                        break;
+                    }
+
                     // Initiate verification request
                     try {
-                        VerificationController verificationController = new VerificationController();
+                        VerificationController controller = new VerificationController();
                         findViewById(R.id.loadingSign).setVisibility(View.VISIBLE);
 
                         // Send verification request
-                        verificationController
-                                .getVerificationRequest("", signature)
+                        controller
+                                .getVerificationRequest(userId, signature)
                                 .sendRequest(VerifySignatureActivity.this);
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
@@ -179,11 +192,11 @@ public class VerifySignatureActivity extends AppCompatActivity
     }
 
     @Override
-    public void onResponseReceived(@Nullable VerificationResponse verificationResponse) {
+    public void onResponseReceived(@Nullable VerificationResponse response) {
         findViewById(R.id.loadingSign).setVisibility(View.GONE);
 
-        if (verificationResponse != null) {
-            if (!verificationResponse.isGenuine()) {
+        if (response != null) {
+            if (!response.isGenuine()) {
                 new AlertDialog.Builder(VerifySignatureActivity.this)
                         .setTitle("NOT GENUINE")
                         .setMessage("The signature does not match with the saved model of this user.")
@@ -192,7 +205,7 @@ public class VerifySignatureActivity extends AppCompatActivity
             } else {
                 new AlertDialog.Builder(VerifySignatureActivity.this)
                         .setTitle("GENUINE")
-                        .setMessage("Signature belongs to claimant '" + verificationResponse.getBelongsTo().getNIC() + "'")
+                        .setMessage("Signature belongs to claimant '" + response.getBelongsTo().getNIC() + "'")
                         .create()
                         .show();
             }

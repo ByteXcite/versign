@@ -14,15 +14,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bytexcite.versign.R;
+import com.bytexcite.versign.controller.RegistrationController;
+import com.bytexcite.versign.model.entity.RegistrationResponse;
 import com.bytexcite.versign.model.entity.SignatureImage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
-public class RegisterUserActivity extends AppCompatActivity implements View.OnClickListener {
+import sfllhkhan95.android.rest.ResponseHandler;
+
+public class RegisterUserActivity extends AppCompatActivity
+        implements View.OnClickListener, ResponseHandler<RegistrationResponse> {
 
     private static final int REQUEST_PICK_IMAGE = 1;
     private static final int REQUEST_TAKE_IMAGE = 2;
@@ -166,10 +173,32 @@ public class RegisterUserActivity extends AppCompatActivity implements View.OnCl
 
             case R.id.registerUser:
                 if (isLoaded[0] && isLoaded[1] && isLoaded[2] && isLoaded[3]) {
-                    // TODO: Initiate verification request
-                    // UploadFileAsync task = new UploadFileAsync();
-                    // new UploadFileAsync().execute(selectedImageUri.toString());
-                    // task.execute(new String[]{"http://www.vogella.com/index.html"});
+                    // Retrieve user ID
+                    String userId = ((EditText) findViewById(R.id.user_id)).getText().toString().trim();
+                    if (userId.isEmpty()) {
+                        // Show 'provide user id' dialog
+                        new AlertDialog.Builder(RegisterUserActivity.this)
+                                .setTitle("Provide User ID")
+                                .setMessage("Please provide the ID of new user.")
+                                .create()
+                                .show();
+                        break;
+                    }
+
+                    // Initiate verification request
+                    try {
+                        RegistrationController controller = new RegistrationController();
+                        findViewById(R.id.loadingSign1).setVisibility(View.VISIBLE);
+                        findViewById(R.id.loadingSign2).setVisibility(View.VISIBLE);
+                        findViewById(R.id.loadingSign3).setVisibility(View.VISIBLE);
+                        findViewById(R.id.loadingSign4).setVisibility(View.VISIBLE);
+
+                        // Send verification request
+                        controller.getRegistrationRequest(userId, signatures)
+                                .sendRequest(RegisterUserActivity.this);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     // Show 'select signature image' dialog
                     new AlertDialog.Builder(RegisterUserActivity.this)
@@ -196,6 +225,35 @@ public class RegisterUserActivity extends AppCompatActivity implements View.OnCl
                 findViewById(R.id.buttonTakePicture).setVisibility(View.VISIBLE);
                 findViewById(R.id.register).setVisibility(View.GONE);
                 break;
+        }
+    }
+
+    @Override
+    public void onResponseReceived(@Nullable RegistrationResponse response) {
+        findViewById(R.id.loadingSign1).setVisibility(View.GONE);
+        findViewById(R.id.loadingSign2).setVisibility(View.GONE);
+        findViewById(R.id.loadingSign3).setVisibility(View.GONE);
+        findViewById(R.id.loadingSign4).setVisibility(View.GONE);
+
+        if (response != null) {
+            if (!response.isSuccessful()) {
+                new AlertDialog.Builder(RegisterUserActivity.this)
+                        .setTitle("FAILURE")
+                        .setMessage("New user could not be registered. Please make sure that user ID is unique.")
+                        .create()
+                        .show();
+            } else {
+                new AlertDialog.Builder(RegisterUserActivity.this)
+                        .setTitle("SUCCESS")
+                        .setMessage("New user successfully registered. You can now verify their signatures.")
+                        .create()
+                        .show();
+            }
+        } else {
+            new AlertDialog.Builder(RegisterUserActivity.this)
+                    .setMessage("User registration failed. Please try again.")
+                    .create()
+                    .show();
         }
     }
 

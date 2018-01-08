@@ -1,33 +1,9 @@
 <?php
-class Customer {
-    public $nic;
-    public $firstName;
-    public $lastName;
+class RegistrationResponse {
+    public $successful;
 
-    function Customer($nic="", $firstName="", $lastName=""){
-        $this->nic = $nic;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-    }
-
-    function getJsonData(){
-        $var = get_object_vars($this);
-        foreach ($var as &$value) {
-            if (is_object($value) && method_exists($value,'getJsonData')) {
-                $value = $value->getJsonData();
-            }
-        }
-        return $var;
-    }
-}
-
-class VerificationResponse {
-    public $genuine;
-    public $belongsTo;
-
-    function VerificationResponse($genuine=true, $NIC="", $firstName="", $lastName=""){
-        $this->genuine = $genuine;
-        $this->belongsTo = new Customer($NIC, $firstName, $lastName);
+    function RegistrationResponse($successful=true){
+        $this->successful = $successful;
     }
 
     function getJsonData(){
@@ -57,13 +33,28 @@ class SignatureImage {
     }
 }
 
-class VerificationRequest {
+class RegistrationRequest {
     public $customerId;
 
     /**
      * SignatureImage
      */
-    public $questionedSignature;
+    public $refSignA;
+
+    /**
+     * SignatureImage
+     */
+    public $refSignB;
+    
+    /**
+     * SignatureImage
+     */
+    public $refSignC;
+    
+    /**
+     * SignatureImage
+     */
+    public $refSignD;
 
     function getJsonData(){
         $var = get_object_vars($this);
@@ -97,20 +88,17 @@ function recast($new, stdClass &$object)
 }
 
 if (isset($_POST["payload"])) {
-    $filename = "verify/request.json";
+    $filename = "register/request.json";
     $file = fopen( $filename, "w" );
 
     if( $file ) {
         fwrite( $file,  $_POST["payload"]);
         fclose( $file );
-        
-        $obj = json_decode($_POST["payload"]);
 
-        system("/Library/Frameworks/Python.framework/Versions/2.7/bin/python verify/process.py >& verify/log");
-        system("/Library/Frameworks/Python.framework/Versions/2.7/bin/python lib/verify.py --user " + $obj->customerID + " --sign verify/" + $obj->customerID + ".png");
+        // system("/Library/Frameworks/Python.framework/Versions/2.7/bin/python register/process.py >& register/log");
     }
     
-    $response = new VerificationResponse(false, "7860123456789", "Test", "User");
+    $response = new RegistrationResponse(true);
     header("Content-type", "text/json");
     echo json_encode($response->getJsonData());
 }
