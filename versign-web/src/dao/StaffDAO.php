@@ -57,7 +57,6 @@ class StaffDAO
                       ('" . $staff->getNic() . "', '" . $staff->getUsername() . "',  md5('" . $staff->getPassword() . "'),
                        '" . $staff->getFirstName() . "', '" . $staff->getLastName() . "', '".$staff->getEmail().
                         "', '".$staff->getAdmin()."');";
-            echo $query;
             if (mysqli_query($connection, $query)) {
                 return true;
             }

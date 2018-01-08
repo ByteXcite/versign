@@ -1,6 +1,6 @@
 <?php
 require_once(realpath(dirname(__FILE__))."/../../src/dao/StaffDAO.php");
-
+use PHPUnit\Framework\TestCase;
 
 /**
  * Created by PhpStorm.
@@ -8,7 +8,7 @@ require_once(realpath(dirname(__FILE__))."/../../src/dao/StaffDAO.php");
  * Date: 27/05/2017
  * Time: 12:37 PM
  */
-class StaffDAOTest extends PHPUnit_Framework_TestCase
+class StaffDAOTest extends TestCase
 {
     function testCanCreateStaffWithValidProperties()
     {

@@ -9,17 +9,22 @@
 class Database
 {
     private static $ourInstance = NULL;
-    private $db_name = "versign";
-    private $db_host = "localhost";
-    private $db_user = "root";
-    private $db_pwd = "root";
+    private $db_name;
+    private $db_host;
+    private $db_user;
+    private $db_pwd;
 
     /**
      * Database constructor. Private so that class cannot be instantiated externally.
      */
     private function __construct()
     {
-
+        require_once(realpath(dirname(__FILE__)) . "/auth.php");
+     
+        $this->db_name = $DB_NAME;
+        $this->db_host = $DB_HOST;
+        $this->db_user = $DB_USER;
+        $this->db_pwd = $DB_AUTH;
     }
 
     /**
