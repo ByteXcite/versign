@@ -37,7 +37,7 @@ public class VerificationController {
     private class VerifyRequest extends HttpRequest<VerificationResponse> {
 
         VerifyRequest(VerificationRequest request) {
-            super(server, "VerificationController.php", VerificationResponse.class);
+            super(server, "src/controller/VerificationController.php", VerificationResponse.class);
             setMethod(HttpMethod.POST);
             setPayload(request);
         }

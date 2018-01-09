@@ -1,5 +1,7 @@
 package com.bytexcite.versign.model.entity;
 
+import android.support.annotation.Nullable;
+
 import java.io.Serializable;
 
 /**
@@ -11,9 +13,9 @@ import java.io.Serializable;
 public class Customer implements Serializable {
 
     /**
-     * NIC number of the bank customer.
+     * id number of the bank customer.
      */
-    private String NIC;
+    private String id;
 
     /**
      * First name of the bank customer.
@@ -26,24 +28,27 @@ public class Customer implements Serializable {
     private String lastName;
 
     /**
-     * Getter method of NIC.
+     * Getter method of id.
      *
-     * @return NIC number of the bank customer
+     * @return id number of the bank customer
      */
-    public String getNIC() {
-        return NIC;
+    @Nullable
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets customer's NIC number.
+     * Sets customer's id number.
      *
-     * @param NIC NIC number of the bank customer
+     * @param id id number of the bank customer
      */
-    public void setNIC(String NIC) throws IllegalArgumentException {
-        if (NIC.trim().length() != 13)
+    public void setId(@Nullable String id) throws IllegalArgumentException {
+        if (id == null) return;
+
+        if (id.trim().length() != 13)
             throw new IllegalArgumentException();
 
-        this.NIC = NIC.trim();
+        this.id = id.trim();
     }
 
     /**
@@ -51,6 +56,7 @@ public class Customer implements Serializable {
      *
      * @return first name of the bank customer
      */
+    @Nullable
     public String getFirstName() {
         return firstName;
     }
@@ -61,7 +67,9 @@ public class Customer implements Serializable {
      * @param firstName first name of the bank customer
      * @throws IllegalArgumentException exception thrown if name is empty string
      */
-    public void setFirstName(String firstName) {
+    public void setFirstName(@Nullable String firstName) {
+        if (firstName == null) return;
+
         if (firstName.trim().equals(""))
             throw new IllegalArgumentException();
 
@@ -73,6 +81,7 @@ public class Customer implements Serializable {
      *
      * @return last name of the bank customer
      */
+    @Nullable
     public String getLastName() {
         return lastName;
     }
@@ -83,7 +92,9 @@ public class Customer implements Serializable {
      * @param lastName last names of the bank customer
      * @throws IllegalArgumentException exception thrown if name is empty string
      */
-    public void setLastName(String lastName) throws IllegalArgumentException {
+    public void setLastName(@Nullable String lastName) throws IllegalArgumentException {
+        if (lastName == null) return;
+
         if (lastName.trim().equals(""))
             throw new IllegalArgumentException();
 

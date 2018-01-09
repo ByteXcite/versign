@@ -11,23 +11,23 @@ import java.io.Serializable;
  */
 public class RegistrationRequest implements Serializable {
 
-    private final String customerID;
+    private final String customerId;
     private final SignatureImage refSignA;
     private final SignatureImage refSignB;
     private final SignatureImage refSignC;
     private final SignatureImage refSignD;
 
-    public RegistrationRequest(String customerID, SignatureImage refSignA, SignatureImage refSignB,
+    public RegistrationRequest(String customerId, SignatureImage refSignA, SignatureImage refSignB,
                                SignatureImage refSignC, SignatureImage refSignD) {
-        this.customerID = customerID;
+        this.customerId = customerId;
         this.refSignA = refSignA;
         this.refSignB = refSignB;
         this.refSignC = refSignC;
         this.refSignD = refSignD;
     }
 
-    public String getCustomerID() {
-        return customerID;
+    public String getCustomerId() {
+        return customerId;
     }
 
     public SignatureImage getRefSignA() {

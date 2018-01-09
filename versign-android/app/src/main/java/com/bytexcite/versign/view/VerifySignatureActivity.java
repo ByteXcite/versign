@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -196,7 +197,13 @@ public class VerifySignatureActivity extends AppCompatActivity
         findViewById(R.id.loadingSign).setVisibility(View.GONE);
 
         if (response != null) {
-            if (!response.isGenuine()) {
+            if (response.getBelongsTo() == null) {
+                new AlertDialog.Builder(VerifySignatureActivity.this)
+                        .setTitle("USER NOT FOUND")
+                        .setMessage("No user with given ID registered with the system.")
+                        .create()
+                        .show();
+            } else if (!response.isGenuine()) {
                 new AlertDialog.Builder(VerifySignatureActivity.this)
                         .setTitle("NOT GENUINE")
                         .setMessage("The signature does not match with the saved model of this user.")
@@ -205,7 +212,7 @@ public class VerifySignatureActivity extends AppCompatActivity
             } else {
                 new AlertDialog.Builder(VerifySignatureActivity.this)
                         .setTitle("GENUINE")
-                        .setMessage("Signature belongs to claimant '" + response.getBelongsTo().getNIC() + "'")
+                        .setMessage("Signature belongs to claimant '" + response.getBelongsTo().getId() + "'")
                         .create()
                         .show();
             }
@@ -223,7 +230,7 @@ public class VerifySignatureActivity extends AppCompatActivity
      * @return output file
      * @throws RuntimeException execption thrown if output file cannot be created
      */
-    @Nullable
+    @NonNull
     private File createImageFile() throws IOException {
         // Create a directory name for image storage
         File mediaStorageDir = new File(

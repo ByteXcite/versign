@@ -12,16 +12,16 @@ import java.io.Serializable;
  */
 public class VerificationRequest implements Serializable {
 
-    private final String customerID;
+    private final String customerId;
     private final SignatureImage questionedSignature;
 
-    public VerificationRequest(String customerID, SignatureImage questionedSignature) {
-        this.customerID = customerID;
+    public VerificationRequest(String customerId, SignatureImage questionedSignature) {
+        this.customerId = customerId;
         this.questionedSignature = questionedSignature;
     }
 
-    public String getCustomerID() {
-        return customerID;
+    public String getCustomerId() {
+        return customerId;
     }
 
     public SignatureImage getQuestionedSignature() {
