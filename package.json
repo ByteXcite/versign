@@ -1,0 +1,23 @@
+{
+  "name": "versign",
+  "version": "0.0.1",
+  "description": "An Off-Line Signature Verification System ",
+  "main": "versign-web/src/view/index.php",
+  "dependencies": {
+    "jquery": "^3.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bytexcite/versign"
+  },
+  "keywords": [
+    "signtuare-verification",
+    "forgery-detection",
+    "cheque-verification"
+  ],
+  "author": "Muhammad Saifullah Khan",
+  "contributors": [
+    "Muhammad Mahad Tariq <14besemmahad@seecs.edu.pk>"
+  ],
+  "license": "MIT"
+}
