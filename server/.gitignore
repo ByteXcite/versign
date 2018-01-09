@@ -18,3 +18,9 @@ vendor/
 Desktop.ini
 .DS_STORE
 Icon
+
+# Debug files
+request.json
+*.png
+*.jpg
+log
