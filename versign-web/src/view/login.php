@@ -5,7 +5,6 @@
     <title>Login | VerSign</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" href="styles/custom.css">
-    <script src="scripts/prefixfree.min.js"></script>
 </head>
 
 <body>
@@ -19,6 +18,5 @@
     </form>
 </div>
 
-<script src="scripts"></script>
 </body>
 </html>

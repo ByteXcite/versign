@@ -19,7 +19,7 @@ $user = unserialize($_SESSION["user"]);
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="/vendor/fontawhttps://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/vendor/fortawesome/font-awesome/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles/custom.css">
     <link rel="stylesheet" href="styles/profile.css"/>
     <link rel="stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css"/>

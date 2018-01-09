@@ -184,6 +184,6 @@ $user = unserialize($_SESSION["user"]);
 <script src="/vendor/datatables/datatables/media/js/dataTables.bootstrap.min.js"></script>
 
 <!-- Custom Theme Scripts -->
-<script src="scripts/custom.min.js"></script>
+<script src="scripts/custom.js"></script>
 </body>
 </html>

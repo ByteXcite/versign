@@ -27,7 +27,6 @@ $user = unserialize($_SESSION["user"]);
     <link rel="stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/custom.css"/>
 
-    <script src="scripts/prefixfree.min.js"></script>
     <script src="/vendor/components/jquery/jquery.min.js"></script>
     <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>

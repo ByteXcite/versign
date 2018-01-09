@@ -26,8 +26,6 @@ $user = unserialize($_SESSION["user"]);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/custom.css"/>
-
-    <script src="scripts/prefixfree.min.js"></script>
 </head>
 
 <body>
@@ -103,8 +101,5 @@ $user = unserialize($_SESSION["user"]);
     <script src="/vendor/components/jquery/jquery.min.js"></script>
     <!-- Bootstrap -->
     <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!-- Custom Theme Scripts -->
-    <script src="scripts"></script>
-
 </body>
 </html>
