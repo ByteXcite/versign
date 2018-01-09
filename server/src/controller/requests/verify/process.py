@@ -4,12 +4,12 @@ from PIL import Image
 
 import os
 
-fo = open("verify/request.json", "r")
+fo = open("requests/verify/request.json", "r")
 payload = fo.read()
 fo.close()
-os.remove("verify/request.json")
+os.remove("requests/verify/request.json")
 
-user = payload.split('customerID":"')[1].split('","questionedSignature')[0]
+user = payload.split('customerId":"')[1].split('","questionedSignature')[0]
 width = int(payload.split('width":')[1].split('}')[0])
 
 pixelData = payload.split('pixelData":[')[1].split('],"width')[0].split(',')
@@ -38,5 +38,5 @@ binarized = Image.fromarray(binarized).convert("L")
 print "Converted back to image"
 
 # Save binarized file
-binarized.save("verify/" + user + ".png")
+binarized.save("requests/verify/" + user + ".png")
 print "Saved binarized image"
