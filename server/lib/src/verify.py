@@ -8,7 +8,8 @@ args = parser.parse_args()
 
 import os
 
-refDir = "db/" + args.user + "/"
+rootDir = "../../../db/users/"
+refDir = rootDir + args.user + "/"
 if not os.path.isdir(refDir):
     print "User", args.user, "is not registered."
     exit(0)
@@ -18,13 +19,13 @@ if not os.path.exists(args.sign):
     exit(-1)
 
 # Create a temporary directory
-tmpDir = "db/" + args.user + "/_temp"
+tmpDir = rootDir + args.user + "/_temp/"
 if not os.path.exists(tmpDir):
     os.mkdir(tmpDir)
 
 # Move questioned signature to this directory
 from PIL import Image
-Image.open(args.sign).save(tmpDir + "/Q001.jpg")
+Image.open(args.sign).save(tmpDir + "Q001.jpg")
 
 # Extract features from the questioned signature
 # os.system("python sigver_wiwd/process_folder.py " + tmpDir + "/ " + tmpDir +"/ sigver_wiwd/models/signet.pkl")
@@ -47,7 +48,7 @@ for f in os.listdir(refDir):
 x_test = []
 for f in os.listdir(tmpDir):
     if f.endswith(".mat"):
-        mat = scipy.io.loadmat(tmpDir + "/" + f)
+        mat = scipy.io.loadmat(tmpDir + f)
         feat = np.array(mat['feature_vector'][0][:])
         x_test.append(feat)
 
@@ -56,10 +57,12 @@ Y_test, Y_train, n_error_train = OneClassSVM(x_train, x_test)
 
 # Show results
 for y in Y_test:
+    f = open("status", "w")
     if y == 1:
-        print True
+        f.write(str(True))
     else:
-        pbrint False
+        f.write(str(False))
+    f.close()
 
 # Remove temporary directory
 #if os.path.exists(tmpDir):
