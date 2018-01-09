@@ -21,6 +21,7 @@
     "twbs/bootstrap": "v3.3.7",
     "phpunit/phpunit": "5.7.0",
     "fortawesome/font-awesome": "v4.7.0",
-    "components/jquery": "3.2.1"
+    "components/jquery": "3.2.1",
+    "datatables/datatables": "dev-master"
   }
 }
