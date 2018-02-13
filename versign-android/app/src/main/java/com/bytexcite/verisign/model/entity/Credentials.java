@@ -1,6 +1,6 @@
-package com.bytexcite.versign.model.entity;
+package com.bytexcite.verisign.model.entity;
 
-import com.bytexcite.versign.util.WebServer;
+import com.bytexcite.verisign.util.WebServer;
 
 /**
  * Credentials entity contains login information of Staff members and is used for authentication

@@ -1,4 +1,4 @@
-package com.bytexcite.versign.view;
+package com.bytexcite.verisign.view;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -18,10 +18,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.bytexcite.versign.R;
-import com.bytexcite.versign.controller.VerificationController;
-import com.bytexcite.versign.model.entity.SignatureImage;
-import com.bytexcite.versign.model.entity.VerificationResponse;
+import com.bytexcite.verisign.R;
+import com.bytexcite.verisign.controller.VerificationController;
+import com.bytexcite.verisign.model.entity.SignatureImage;
+import com.bytexcite.verisign.model.entity.VerificationResponse;
 
 import java.io.File;
 import java.io.IOException;

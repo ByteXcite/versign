@@ -1,11 +1,11 @@
-package com.bytexcite.versign.controller;
+package com.bytexcite.verisign.controller;
 
 import android.util.Log;
 
-import com.bytexcite.versign.model.entity.SignatureImage;
-import com.bytexcite.versign.model.entity.VerificationRequest;
-import com.bytexcite.versign.model.entity.VerificationResponse;
-import com.bytexcite.versign.util.WebServer;
+import com.bytexcite.verisign.model.entity.SignatureImage;
+import com.bytexcite.verisign.model.entity.VerificationRequest;
+import com.bytexcite.verisign.model.entity.VerificationResponse;
+import com.bytexcite.verisign.util.WebServer;
 
 import java.net.MalformedURLException;
 

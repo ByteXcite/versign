@@ -1,4 +1,4 @@
-package com.bytexcite.versign.model.entity;
+package com.bytexcite.verisign.model.entity;
 
 import android.support.annotation.Nullable;
 

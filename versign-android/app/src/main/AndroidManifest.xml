@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bytexcite.versign">
+    package="com.bytexcite.verisign">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -21,8 +21,8 @@
         android:theme="@style/AppTheme">
 
         <provider
-            android:name=".util.GenericFileProvider"
-            android:authorities="${applicationId}.com.bytexcite.versign.provider"
+            android:name="com.bytexcite.verisign.util.GenericFileProvider"
+            android:authorities="${applicationId}.com.bytexcite.verisign.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -31,7 +31,7 @@
         </provider>
 
         <activity
-            android:name=".view.LaunchScreen"
+            android:name="com.bytexcite.verisign.view.LaunchScreen"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,19 +40,19 @@
         </activity>
 
         <activity
-            android:name=".view.LoginActivity"
+            android:name="com.bytexcite.verisign.view.LoginActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".view.MenuMainActivity"
+            android:name="com.bytexcite.verisign.view.MenuMainActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".view.RegisterUserActivity"
+            android:name="com.bytexcite.verisign.view.RegisterUserActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".view.VerifySignatureActivity"
+            android:name="com.bytexcite.verisign.view.VerifySignatureActivity"
             android:screenOrientation="portrait" />
 
     </application>

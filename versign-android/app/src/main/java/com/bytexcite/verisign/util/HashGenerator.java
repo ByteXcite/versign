@@ -1,4 +1,4 @@
-package com.bytexcite.versign.util;
+package com.bytexcite.verisign.util;
 
 import java.math.BigInteger;
 import java.nio.charset.Charset;

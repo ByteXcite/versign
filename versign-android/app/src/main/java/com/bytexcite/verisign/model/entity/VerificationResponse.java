@@ -1,4 +1,4 @@
-package com.bytexcite.versign.model.entity;
+package com.bytexcite.verisign.model.entity;
 
 /**
  * VerificationResponse is received from the server in response to a VerificationRequest.

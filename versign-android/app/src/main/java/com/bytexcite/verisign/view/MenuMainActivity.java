@@ -1,11 +1,11 @@
-package com.bytexcite.versign.view;
+package com.bytexcite.verisign.view;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.bytexcite.versign.R;
+import com.bytexcite.verisign.R;
 
 public class MenuMainActivity extends AppCompatActivity implements View.OnClickListener {
 

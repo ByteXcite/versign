@@ -1,8 +1,8 @@
-package com.bytexcite.versign.model.dao;
+package com.bytexcite.verisign.model.dao;
 
-import com.bytexcite.versign.model.entity.Credentials;
-import com.bytexcite.versign.model.entity.Staff;
-import com.bytexcite.versign.util.WebServer;
+import com.bytexcite.verisign.model.entity.Credentials;
+import com.bytexcite.verisign.model.entity.Staff;
+import com.bytexcite.verisign.util.WebServer;
 
 import java.net.MalformedURLException;
 

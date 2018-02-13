@@ -1,4 +1,4 @@
-package com.bytexcite.versign.view;
+package com.bytexcite.verisign.view;
 
 import android.Manifest;
 import android.content.Intent;
@@ -9,8 +9,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
-import com.bytexcite.versign.R;
-import com.bytexcite.versign.model.entity.SessionData;
+import com.bytexcite.verisign.R;
+import com.bytexcite.verisign.model.entity.SessionData;
 
 import java.util.Timer;
 import java.util.TimerTask;

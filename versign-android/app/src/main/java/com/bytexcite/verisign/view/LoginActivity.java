@@ -1,4 +1,4 @@
-package com.bytexcite.versign.view;
+package com.bytexcite.verisign.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bytexcite.versign.R;
-import com.bytexcite.versign.model.dao.StaffDao;
-import com.bytexcite.versign.model.entity.SessionData;
-import com.bytexcite.versign.model.entity.Staff;
-import com.bytexcite.versign.util.HashGenerator;
+import com.bytexcite.verisign.R;
+import com.bytexcite.verisign.model.dao.StaffDao;
+import com.bytexcite.verisign.model.entity.SessionData;
+import com.bytexcite.verisign.model.entity.Staff;
+import com.bytexcite.verisign.util.HashGenerator;
 
 import java.net.MalformedURLException;
 
