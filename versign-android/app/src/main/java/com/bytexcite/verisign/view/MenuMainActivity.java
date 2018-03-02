@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.bytexcite.verisign.R;
+import com.bytexcite.verisign.model.entity.SessionData;
 
 public class MenuMainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -23,11 +24,20 @@ public class MenuMainActivity extends AppCompatActivity implements View.OnClickL
         switch (v.getId()) {
             case R.id.registerUser:
                 startActivity(new Intent(getApplicationContext(), RegisterUserActivity.class));
+                overridePendingTransition(0, 0);
                 break;
 
             case R.id.verifySignature:
                 startActivity(new Intent(getApplicationContext(), VerifySignatureActivity.class));
+                overridePendingTransition(0, 0);
                 break;
         }
     }
+
+    public void signOut(View v) {
+        SessionData.getInstance(this).destroySession();
+        finish();
+        startActivity(new Intent(this, LoginActivity.class));
+    }
+
 }

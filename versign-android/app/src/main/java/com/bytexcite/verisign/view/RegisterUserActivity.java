@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import com.bytexcite.verisign.R;
 import com.bytexcite.verisign.controller.RegistrationController;
 import com.bytexcite.verisign.model.entity.RegistrationResponse;
+import com.bytexcite.verisign.model.entity.SessionData;
 import com.bytexcite.verisign.model.entity.SignatureImage;
 
 import java.io.File;
@@ -315,7 +316,7 @@ public class RegisterUserActivity extends AppCompatActivity
                 mPhotoFile = photoFile;
 
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        getApplicationContext().getPackageName() + ".com.bytexcite.versign.provider",
+                        getApplicationContext().getPackageName() + ".com.bytexcite.verisign.provider",
                         mPhotoFile);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                 cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -323,6 +324,12 @@ public class RegisterUserActivity extends AppCompatActivity
                 startActivityForResult(cameraIntent, REQUEST_TAKE_IMAGE);
             }
         }
+    }
+
+    public void signOut(View v) {
+        SessionData.getInstance(this).destroySession();
+        finish();
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
 }
