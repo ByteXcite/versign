@@ -10,28 +10,28 @@ require_once(realpath(dirname(__FILE__))."/LoginController.php");
 require_once(realpath(dirname(__FILE__))."/StaffManagementController.php");
 
 
-echo "<pre>";
-echo "Routing request ...\n";
+#echo "<pre>";
+#echo "Routing request ...\n";
 if (isset($_GET["controller"]) && isset($_GET["action"])) {
 
-    echo "Locating controller ... ";
+    #echo "Locating controller ... ";
     if (class_exists($_GET["controller"])) {
         $controller = new $_GET["controller"]();
 
-        echo "Found\nLocating action ... ";
+        #echo "Found\nLocating action ... ";
         if (method_exists($controller, $_GET["action"])) {
             $action = $_GET["action"];
 
-            echo "Found\nExecuting action ... ";
+            #echo "Found\nExecuting action ... ";
             $controller->$action();
-            echo "Done\n";
+            #echo "Done\n";
         } else {
-            echo "Not found!\n";
+            #echo "Not found!\n";
         }
     } else {
-        echo "Not found!\n";
+        #echo "Not found!\n";
     }
 } else {
-    echo "No controller and/or action specified";
+    #echo "No controller and/or action specified";
 }
-echo "</pre>";
+#echo "</pre>";
