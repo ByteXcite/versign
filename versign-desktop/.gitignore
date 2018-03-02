@@ -1,0 +1,12 @@
+# Build files
+bin/
+build/
+out/
+*.pyc
+
+# Local files
+*.psd
+
+# OS files
+.DS_STORE
+Desktop.ini
