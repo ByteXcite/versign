@@ -32,11 +32,15 @@ class SessionManager
         return self::$ourInstance;
     }
 
-    public function startSession($username, $password)
+    public function startSession($username, $password, $root_access=False)
     {
         $this->endSession();
 
         if ($this->currentUser = $this->signIn($username, $password)) {
+            if ($root_access && !$this->currentUser->isAdmin()) {
+                return null;
+            }
+            
             session_start();
             $_SESSION["user"] = serialize($this->currentUser);
         }
