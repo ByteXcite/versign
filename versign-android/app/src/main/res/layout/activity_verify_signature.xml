@@ -1,129 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg"
-    android:gravity="center"
-    android:orientation="vertical"
     android:padding="20dp"
-    tools:context=".view.RegisterUserActivity">
-
-    <RelativeLayout
-        android:layout_width="200dp"
-        android:layout_height="200dp">
-
-        <ImageView
-            android:id="@+id/sigantureImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/btn_default"
-            android:padding="5dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/placeholder" />
-
-        <ImageView
-            android:id="@+id/loadingComplete"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerInParent="true"
-            android:padding="0dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_loading_complete"
-            android:visibility="gone" />
-
-        <ProgressBar
-            android:id="@+id/loadingSign"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerInParent="true"
-            android:indeterminate="true" />
-
-    </RelativeLayout>
+    tools:context=".view.VerifySignatureActivity">
 
     <LinearLayout
-        android:id="@+id/buttonChoosePicture"
-        android:layout_width="165dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/btn"
-        android:gravity="center_vertical|start"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_gallery" />
+        android:gravity="end|center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginStart="10dp"
-            android:text="Choose Image"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+            android:paddingEnd="5dp"
+            android:paddingRight="5dp"
+            android:text="Sign Out " />
+
+        <ImageButton
+            android:id="@+id/signOutButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="#0000"
+            android:onClick="signOut"
+            android:src="@drawable/ic_action_signout"
+            android:text="Sign Out" />
 
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/buttonTakePicture"
-        android:layout_width="165dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn"
-        android:gravity="center_vertical|start"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_camera" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginStart="10dp"
-            android:text="Take Photo"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/verify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/user_id"
-            style="@style/input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="ENTER USER'S ID"
-            android:inputType="number"
-            android:maxLength="13"
-            android:maxLines="1"
-            android:padding="5dp"
-            android:textAllCaps="true" />
+        <RelativeLayout
+            android:layout_width="200dp"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/sigantureImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/btn_default"
+                android:padding="5dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder" />
+
+            <ImageView
+                android:id="@+id/loadingComplete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:padding="0dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_loading_complete"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/loadingSign"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:indeterminate="true" />
+
+        </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/verifySignature"
-            android:layout_width="wrap_content"
+            android:id="@+id/buttonChoosePicture"
+            android:layout_width="165dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_margin="10dp"
             android:background="@drawable/btn"
             android:gravity="center_vertical|start"
             android:orientation="horizontal"
@@ -132,7 +82,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_verify" />
+                android:src="@drawable/ic_action_gallery" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -141,17 +91,16 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginStart="10dp"
-                android:text="Verify"
+                android:text="Choose Image"
                 android:textAllCaps="true"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/reset"
-            android:layout_width="wrap_content"
+            android:id="@+id/buttonTakePicture"
+            android:layout_width="165dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:background="@drawable/btn"
             android:gravity="center_vertical|start"
             android:orientation="horizontal"
@@ -160,7 +109,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_action_reset" />
+                android:src="@drawable/ic_action_camera" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -169,12 +118,93 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginStart="10dp"
-                android:text="Reset"
+                android:text="Take Photo"
                 android:textAllCaps="true"
                 android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/verify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/user_id"
+                style="@style/input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:gravity="center"
+                android:hint="ENTER USER'S ID"
+                android:inputType="number"
+                android:maxLength="13"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:textAllCaps="true" />
+
+            <LinearLayout
+                android:id="@+id/verifySignature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn"
+                android:gravity="center_vertical|start"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_verify" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Verify"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn"
+                android:gravity="center_vertical|start"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_reset" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="Reset"
+                    android:textAllCaps="true"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
