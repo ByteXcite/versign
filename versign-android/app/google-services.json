@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "924219091122",
+    "firebase_url": "https://verisign-fd702.firebaseio.com",
+    "project_id": "verisign-fd702",
+    "storage_bucket": "verisign-fd702.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924219091122:android:a16060c42c3b04a7",
+        "android_client_info": {
+          "package_name": "com.bytexcite.verisign"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "924219091122-kpbf77mfskdk3a0pinjbihs57dmm19f1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvX7OHOlXAzHMaohFcosfYfwBD-Pw1q8g"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
