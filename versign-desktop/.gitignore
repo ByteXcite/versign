@@ -5,6 +5,7 @@ out/
 *.pyc
 
 # Local files
+*/models/
 *.psd
 
 # OS files
