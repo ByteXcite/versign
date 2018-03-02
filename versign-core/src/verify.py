@@ -6,9 +6,11 @@ requiredNamed.add_argument("--sign", dest="sign", required=True, help="signature
 requiredNamed.add_argument("--user", dest="user", required=True, help="id of user to perform verification against")
 args = parser.parse_args()
 
-import os
+import os, sys
 
-rootDir = "../../../db/users/"
+print sys.argv
+
+rootDir = "verisign-core/db/users/"
 refDir = rootDir + args.user + "/"
 if not os.path.isdir(refDir):
     print "User", args.user, "is not registered."
@@ -28,7 +30,7 @@ from PIL import Image
 Image.open(args.sign).save(tmpDir + "Q001.jpg")
 
 # Extract features from the questioned signature
-# os.system("python sigver_wiwd/process_folder.py " + tmpDir + "/ " + tmpDir +"/ sigver_wiwd/models/signet.pkl")
+os.system("python verisign-core/src/libs/sigver_wiwd/process_folder.py " + tmpDir + "/ " + tmpDir +"/")
 from classifiers import OneClassSVM, OneClassSVMWithPCA
 from sklearn.metrics import accuracy_score
 

@@ -1,5 +1,5 @@
 <?php
-require_once(realpath(dirname(__FILE__)) . "/../utils/ClassCastException.php");
+require_once(realpath(dirname(__FILE__)) . "/../util/ClassCastException.php");
 
 /**
  * @author saifkhichi96

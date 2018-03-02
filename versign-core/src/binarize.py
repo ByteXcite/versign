@@ -18,7 +18,7 @@ postfix = "_BIN.png"
 
 def binarize(infile):
     outfile = infile[:-4] + postfix
-    if args.sign:
+    if args.sign == "True":
         preprocess_sign(infile, outfile, (1024, 1024))
     else:
         preprocess_cheque(infile, outfile)

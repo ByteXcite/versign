@@ -3,7 +3,7 @@
 # inDir by generating four new images for each image in the input data. Augmentation is #
 # performed by performing minor transformations (rotation, etc.) on input data.         #
 #########################################################################################
-from preprocess import ImageProcessor
+#from preprocess import ImageProcessor
 from PIL import Image
 
 import cv2, random, os, numpy as np, sys
@@ -55,11 +55,12 @@ def main():
 
         # Apply OTSU thresholding on input image and save it
         outFile = outDir + fn + ".0" + ext
-        cv2.imwrite(outFile, otsu(cv2.imread(inDir +  fn + ext, 0)))
+        #cv2.imwrite(outFile, otsu(cv2.imread(inDir +  fn + ext, 0)))
+        cv2.imwrite(outFile, cv2.imread(inDir +  fn + ext, 0))
 
         # Crop and normalize image's size
-        cropped = ImageProcessor().preprocess(Image.open(outFile).convert("L"))
-        cropped.save(outFile)
+        #cropped = ImageProcessor().preprocess(Image.open(outFile).convert("L"))
+        #cropped.save(outFile)
 
         # Augment input data by rotating image at random angles in range (-5, 5)
         image = Image.open(outFile)
