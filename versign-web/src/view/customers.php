@@ -43,8 +43,8 @@ $user = unserialize($_SESSION["user"]);
             <a class="navbar-brand" href="index.php">VeriSign</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="index.php">Employees</a></li>
-            <li><a href="customers.php">Customers</a></li>
+            <li><a href="index.php">Employees</a></li>
+            <li class="active"><a href="customers.php">Customers</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="profile.php"><? echo "Welcome, " . $user->getFirstName(); ?>
@@ -62,8 +62,8 @@ $user = unserialize($_SESSION["user"]);
     <div class="container">
         <div class='x_panel col-sm-12 col-md-9 col-xs-12'>
             <div class='x_title'>
-                <h3>Employees<br>
-                    <small>Lists of employees of the bank</small>
+                <h3>Customers<br>
+                    <small>Lists of bank accounts</small>
                 </h3>
                 <div class='clearfix'></div>
             </div>
@@ -71,12 +71,12 @@ $user = unserialize($_SESSION["user"]);
                 <table id='datatable' class='table table-striped table-bordered'>
                     <thead>
                     <tr>
-                        <th>NIC</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Position</th>
-                        <th>Username</th>
-                        <th>Email</th>
+                        <th>Account #</th>
+                        <th>Account Title</th>
+                        <th>Branch</th>
+                        <th>Customer Name</th>
+                        <th>Customer Email</th>
+                        <th>Opened On</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -89,7 +89,7 @@ $user = unserialize($_SESSION["user"]);
                             <td>" . $emp->getNic() . "</td>
                             <td>" . $emp->getFirstName() . "</td>
                             <td>" . $emp->getLastName() . "</td>
-                            <td>" . $emp->getPosition() . "</td>
+                            <td>" . $emp->isAdmin() . "</td>
                             <td>" . $emp->getUsername() . "</td>
                             <td>" . $emp->getEmail() . "</td>
                         </tr>";
@@ -102,18 +102,19 @@ $user = unserialize($_SESSION["user"]);
         <div class="x_panel col-sm-12 col-md-3 col-xs-12">
             <br><br><br>
             <div class='x_title'>
-                <h3>Employee Management</h3>
+                <h3>Account Management</h3>
                 <div class='clearfix'></div>
             </div>
             <div class="btn-group">
-                <a href="employee_add.php">
-                    <button class="btn-primary">Hire Employee</button>
+                <a href="customer_add.php">
+                    <button class="btn-primary">Add Account</button>
                 </a>
-                <br><br>
-                <form method="post" action="../controller/route.php?controller=StaffManagementController&action=fire">
-                    <input type="number" maxlength="13" minlength="13" name="nic" placeholder="Employee NIC"/>
-                    <button class="btn-primary" type="submit">Fire Employee</button>
-                </form>
+                <a href="?edit_customer">
+                    <button class="btn-primary">Edit Account</button>
+                </a>
+                <a href="?remove_customer">
+                    <button class="btn-primary">Remove Account</button>
+                </a>
             </div>
         </div>
     </div>

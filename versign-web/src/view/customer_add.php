@@ -20,25 +20,26 @@ $user = unserialize($_SESSION["user"]);
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Add Customer | VerSign</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Add Customer | VeriSign</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-    <link rel="stylesheet" href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Bootstrap -->
+    <link href="../../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="styles/custom.css"/>
-
-    <script src="/vendor/components/jquery/jquery.min.js"></script>
-    <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
+
 <body id="main_body">
 <!-- Navbar -->
 <nav class="navbar navbar-inverse">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="index.php">VerSign</a>
+            <a class="navbar-brand" href="index.php">VeriSign</a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="index.php">Home</a></li>
+            <li><a href="index.php">Employees</a></li>
+            <li class="active"><a href="customers.php">Customers</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="profile.php"><? echo "Welcome, ".$user->getFirstName(); ?>
@@ -90,5 +91,11 @@ $user = unserialize($_SESSION["user"]);
             <button type="submit" class="btn btn-primary btn-block btn-large">Train system</button>
         </form>
     </div>
+
+    <script src="../../vendor/components/jquery/jquery.min.js"></script>
+    <script src="../../vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom Theme Scripts -->
+    <script src="scripts/custom.js"></script>
 </body>
 </html>
