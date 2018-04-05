@@ -4,11 +4,9 @@ import cv2
 import numpy as np
 import remove_lines
 
-def extract_signature(filename, model):
+def extract_signature(im, model):
     # Load the trained model
     clf = joblib.load(model)
-
-    im = cv2.imread(filename, 0)
 
     # crop bottom right of image where signature lies, according to our prior knowledge
     w, h = im.shape
@@ -19,7 +17,7 @@ def extract_signature(filename, model):
     original = cv2.bitwise_not(im)
     smoothed = cv2.GaussianBlur(original, (35, 35), 0)
     cv2.subtract(original, smoothed, im)
-    ret3, thresh = cv2.threshold(im, 0, 255, \
+    ret3, thresh = cv2.threshold(original, 0, 255, \
                                  cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     # Remove lines from the image
@@ -55,10 +53,14 @@ def extract_signature(filename, model):
             votes_all = len(predictions)
             votes_yes = np.count_nonzero(predictions)
             confidence = 100.0 * votes_yes / votes_all
-            #if confidence < 1:
-            #    thresh[im] = 0
+            if confidence < 1:
+                thresh[im] = 0
         else:
             thresh[im] = 0
+
+    #cv2.imshow("After Component Analysis", thresh)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
     # Invert colors
     thresh = cv2.bitwise_not(thresh)

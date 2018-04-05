@@ -6,7 +6,7 @@ import os
 
 fo = open("register/request.json", "r")
 payload = fo.read()
-fo.close()ls
+fo.close()
 # os.remove("register/request.json")
 
 user = payload.split('customerID":"')[1].split('","refSignA')[0]

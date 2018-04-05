@@ -21,19 +21,12 @@ def randomRotate(image, min=-5, max=5):
     out = Image.composite(rot, fff, rot)
     return out.convert(image.mode)
 
-def main():
-    # Validate command-line arguments
-    if len(sys.argv) < 3:
-        print "\nUsage:\tpython", sys.argv[0], "<input-folder> <output-folder>\n"
-        return
-
+def augment(inDir, outDir):
     # Path of input directory
-    inDir = sys.argv[1]
     if not inDir.endswith("/"):
         inDir += "/"
 
     # Path where augmented data will be saved
-    outDir = sys.argv[2]
     if not outDir.endswith("/"):
         outDir += "/"
 
@@ -51,10 +44,9 @@ def main():
         # Extract file name and extension
         fn = file[:-4]
         ext = "." + file.split(".")[-1]
-        print fn, ext
 
         # Apply OTSU thresholding on input image and save it
-        outFile = outDir + fn + ".0" + ext
+        outFile = outDir + fn + "0" + ext
         #cv2.imwrite(outFile, otsu(cv2.imread(inDir +  fn + ext, 0)))
         cv2.imwrite(outFile, cv2.imread(inDir +  fn + ext, 0))
 
@@ -66,6 +58,18 @@ def main():
         image = Image.open(outFile)
         for i in range(0, copies):
             rotated = randomRotate(image, min=-aMax, max=aMax)
-            rotated.save(outDir + fn + "." + str(i + 1) + ext)
+            rotated.save(outDir + fn + str(i + 1) + ext)
 
-main()
+def main():
+    # Validate command-line arguments
+    if len(sys.argv) < 3:
+        print "\nUsage:\tpython", sys.argv[0], "<input-folder> <output-folder>\n"
+        return
+
+    inDir = sys.argv[1]
+    outDir = sys.argv[2]
+
+    augment(inDir, outDir)
+
+if __name__ == "__main__":
+    main()
