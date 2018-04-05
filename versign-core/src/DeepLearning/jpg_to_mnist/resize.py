@@ -10,7 +10,8 @@ import numpy as np
 import cv2
 
 # root = "/home/mmahad/Documents/FYP/jpg_to_mnist/training_images/"
-root = "/home/mmahad/datasets/my_dataset/test"
+# root = "/home/mmahad/datasets/my_dataset/test"
+root = sys.argv[1]
 
 def silentremove(filename):
     # This function deletes a file safely
