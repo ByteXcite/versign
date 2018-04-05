@@ -5,6 +5,7 @@ out/
 *.pyc
 
 # Local files
+*/dataset/
 */models/
 *.psd
 
