@@ -7,6 +7,7 @@ libs/
 
 # Build files
 *.pyc
+bin/
 build/
 out/
 target/
@@ -23,4 +24,3 @@ Icon
 request.json
 *.png
 *.jpg
-log
