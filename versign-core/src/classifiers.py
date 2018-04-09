@@ -8,11 +8,13 @@ def OneClassSVM(x_train, x_test):
     clf.fit(x_train)
 
     # Calculate model error
-    Y_train = clf.predict(x_train)
+    # Y_train = clf.predict(x_train)
+    Y_train = clf.decision_function(x_train)
     n_error_train = Y_train[Y_train == -1].size
 
     # Predict results
-    Y_test = clf.predict(x_test)
+    # Y_test = clf.predict(x_test)
+    Y_test = clf.decision_function(x_test)
 
     return Y_test, Y_train, n_error_train
 
@@ -22,7 +24,7 @@ def OneClassSVMWithPCA(x_train, x_test):
     x_test = np.array(x_test)
     print x_train.shape
     print x_test.shape
-    
+
     x_train = decomposition.PCA(n_components=25).fit_transform(x_train)
     x_test = decomposition.PCA(n_components=25).fit_transform(x_test)
 
