@@ -29,11 +29,11 @@ def find_signatures(refSigns):
     signs = []
     for x in [px, _w]:
         for y in [py, _h]:
-            signs.append(refSignsA[y:y+_h, x:x+_w])
-            signs.append(refSignsB[y:y+_h, x:x+_w])
+            signs.append((refSignsA[y:y+_h, x:x+_w], (x, y, _w, _h)))
+            signs.append((refSignsB[y:y+_h, x:x+_w], (x, h/2 + y, _w, _h)))
 
     bounds = []
-    for signature in signs:
+    for signature, oldBounds in signs:
         # Invert colors
         signature = cv2.bitwise_not(signature)
 
@@ -42,7 +42,8 @@ def find_signatures(refSigns):
         points = np.fliplr(points)              # store them in x,y coordinates instead of row,col indices
         x, y, w, h = cv2.boundingRect(points)   # create a rectangle around those points
         x, y, w, h = x-10, y-10, w+20, h+20     # add padding
-        bounds.append((x, y, w, h))
+        _x, _y, _w, _h = oldBounds
+        bounds.append((x + _x, y + _y, w, h))
     return bounds
 
 def extract_signature(im, model):
