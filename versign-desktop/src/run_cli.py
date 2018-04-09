@@ -11,6 +11,13 @@ import errno
 import subprocess
 import os
 
+
+def scanImage(outfile):
+    bashCommand = "scanimage --resolution 10 --mode Gray --format tiff > " + outfile + ".tiff"
+    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    return outfile + ".tiff"
+
 def onRegisterSelected():
     print "REGISTER NEW USER"
     userId = raw_input("User ID (must be unique): ")
@@ -22,19 +29,16 @@ def onRegisterSelected():
     raw_input(prompt)
 
     #filename = scanImage(outfile=userId)
-    filename = "../res/SH1_G_REF.png"
+    filename = "../res/004_SH1_G.png"
 
     refSigns = cv2.imread(filename, 0)
 
     h, w = refSigns.shape
-    x = int(0.075*w)
-    y = int(0.075*h)
+    x = int(0.025*w)
+    y = int(0.025*h)
     w = w - 2*x
     h = h - 2*y
     refSigns = refSigns[y:y+h, x:x+w]
-
-    h, w = refSigns.shape
-    refSigns = refSigns[h/2:h, 0:w]
 
     h, w = refSigns.shape
     if register(userId, refSigns, dirCore=rootDir):

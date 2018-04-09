@@ -17,6 +17,11 @@ import tkFileDialog
 import Tkinter as tk
 import tkMessageBox
 
+def scanImage(outfile):
+    bashCommand = "scanimage --resolution 10 --mode Gray --format tiff > " + outfile + ".tiff"
+    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    return outfile + ".tiff"
 
 class Activity:
 	__metaclass__ = ABCMeta
@@ -159,7 +164,8 @@ class RegistrationActivity(Activity):
 		def openImage():
 			# open a file chooser dialog and allow the user to select an input image
 			path = tkFileDialog.askopenfilename()
-	    
+    		#path = scanImage(outfile=userId)
+
 			# ensure a file path was selected
 			if len(path) > 0:
 				try:
