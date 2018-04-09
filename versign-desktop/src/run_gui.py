@@ -1,4 +1,5 @@
 import sys
+import subprocess
 rootDir = "../../versign-core/"
 sys.path.append(rootDir)
 
@@ -18,9 +19,11 @@ import Tkinter as tk
 import tkMessageBox
 
 def scanImage(outfile):
-    bashCommand = "scanimage --resolution 10 --mode Gray --format tiff > " + outfile + ".tiff"
+    bashCommand = "scanimage --resolution 10 --mode Gray --format tiff > doc.tiff"
+    print bashCommand
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
+    print "Scanned"
     return outfile + ".tiff"
 
 class Activity:
@@ -98,7 +101,7 @@ class RegistrationActivity(Activity):
 		dest_w, dest_h = canvas_size
 		if src_w == 0 or src_h == 0:
 			output = Image.fromarray(np.ones(canvas_size).transpose() * 255.0)
-		
+
 		else:
 			aspect_source = src_w / float(src_h)
 			aspect_canvas = dest_w / float(dest_h)
@@ -111,7 +114,7 @@ class RegistrationActivity(Activity):
 				new_h = int(dest_h)
 
 			output = source.resize((new_w, new_h), Image.ANTIALIAS)
-	
+
 		print "Source:", source.size, "Canvas:", canvas_size, "Output:", output.size
 		return output
 
@@ -141,13 +144,13 @@ class RegistrationActivity(Activity):
 			if self.signatures is None:
 				tkMessageBox.showerror("Error", "Reference signatures not provided")
 				return
-				
+
 			userId = self.userId.get()
-			if userId is not "" and self.signatures is not None:	
+			if userId is not "" and self.signatures is not None:
 				if is_registered(userId, dirCore=rootDir):
 					tkMessageBox.showerror(self.userId.get() + " already exists", "This user ID is already taken. Please provide a unique ID.")
 					return
-					
+
 				refSigns = self.signatures
 				#h, w = refSigns.shape
 				#x = int(0.025*w)
@@ -155,7 +158,7 @@ class RegistrationActivity(Activity):
 				#w = w - 2*x
 				#h = h - 2*y
 				#refSigns = refSigns[y:y+h, x:x+w]
-				
+
 				h, w = refSigns.shape
 
 				if register(userId, refSigns, dirCore=rootDir):
@@ -163,7 +166,7 @@ class RegistrationActivity(Activity):
 
 		def openImage():
 			# open a file chooser dialog and allow the user to select an input image
-			path = tkFileDialog.askopenfilename()
+			path =  scanImage(outfile="scanned")
     		#path = scanImage(outfile=userId)
 
 			# ensure a file path was selected
@@ -231,7 +234,7 @@ class VerificationActivity(Activity):
 		dest_w, dest_h = canvas_size
 		if src_w == 0 or src_h == 0:
 			output = Image.fromarray(np.ones(canvas_size).transpose() * 255.0)
-		
+
 		else:
 			aspect_source = src_w / float(src_h)
 			aspect_canvas = dest_w / float(dest_h)
@@ -244,7 +247,7 @@ class VerificationActivity(Activity):
 				new_h = int(dest_h)
 
 			output = source.resize((new_w, new_h), Image.ANTIALIAS)
-	
+
 		print "Source:", source.size, "Canvas:", canvas_size, "Output:", output.size
 		return output
 
@@ -266,13 +269,13 @@ class VerificationActivity(Activity):
 			if self.signature is None:
 				tkMessageBox.showerror("Error", "Signature not provided")
 				return
-				
+
 			userId = self.userId.get()
-			if userId is not "" and self.signature is not None:	
+			if userId is not "" and self.signature is not None:
 				if not is_registered(userId, dirCore=rootDir):
 					tkMessageBox.showerror(self.userId.get() + " not found", "No such user exists. Add a new user using the Register menu.")
 					return
-				
+
 				result = verify_signature(userId, self.signature, rootDir)
 				self.signature = None
 				if result is True:
@@ -283,7 +286,7 @@ class VerificationActivity(Activity):
 		def openImage():
 			# open a file chooser dialog and allow the user to select an input image
 			path = tkFileDialog.askopenfilename()
-	    
+
 			# ensure a file path was selected
 			if len(path) > 0:
 				try:
@@ -291,7 +294,7 @@ class VerificationActivity(Activity):
 						self.signature = extract_signature(cv2.imread(path, 0), rootDir + "/db/models/tree.pkl")
 					else:
 						self.signature = cv2.imread(path, 0)
-					
+
 					w, h = self.signature.shape
 					if w is 0 or h is 0:
 						raise exception()
@@ -299,7 +302,7 @@ class VerificationActivity(Activity):
 					signature = Image.fromarray(self.signature).convert("RGB")
 					signature = self.resize(signature, (self.destImgHolder.winfo_width(), self.destImgHolder.winfo_height()))
 					self.setSignatureImage(signature, app.window)
-				except:		
+				except:
 					tkMessageBox.showerror("Error", "No signature detected")
 		background_image=ImageTk.PhotoImage(Image.open("../res/bg.png"))
 		background_label = tk.Label(app.window, image=background_image, width=795, height=595)
@@ -316,7 +319,7 @@ class VerificationActivity(Activity):
 		tk.Radiobutton(containerLt, text="Cheque", variable=self.v, value=1).grid(row=1, sticky="nw")
 		tk.Radiobutton(containerLt, text="Signature", variable=self.v, value=2).grid(row=2, sticky="nw")
 		tk.Radiobutton(containerLt, text="Document", variable=self.v, value=3).grid(row=3, sticky="nw")
-		
+
 		tk.Label(containerLt, text="ENTER USER ID", font='Helvetica 14 bold').grid(row=4, stick="nw", pady=("10", "0"))
 		tk.Entry(containerLt, textvariable=self.userId).grid(row=5, column=0, sticky="ew")
 
@@ -356,7 +359,7 @@ class App:
 			self.startActivity(activity)
 
 		t = threading.Timer(delay, delayedTask)
-		t.start() 
+		t.start()
 
 	def startActivity(self, activity, args=None):
 		self.clear()

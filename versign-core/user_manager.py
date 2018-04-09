@@ -28,7 +28,7 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
 
     Returns a boolean indicating whether the registration was
     sucessful or not.
-    
+
     Keyword arguments:
     userId   -- a unique string identifying the new user.
     refSigns -- an numpy array containing image of four reference
@@ -52,8 +52,8 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
 
     # Thresholding to get binary image
     original = cv2.bitwise_not(refSigns)
-    smoothed = cv2.GaussianBlur(original, (35, 35), 0)
-    cv2.subtract(original, smoothed, refSigns)
+    #smoothed = cv2.GaussianBlur(original, (35, 35), 0)
+    #cv2.subtract(original, smoothed, refSigns)
     ret3, thresh = cv2.threshold(refSigns, 0, 255, \
                                  cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
@@ -94,10 +94,10 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
         points = np.fliplr(points)              # store them in x,y coordinates instead of row,col indices
         x, y, w, h = cv2.boundingRect(points)   # create a rectangle around those points
         x, y, w, h = x-10, y-10, w+20, h+20     # add padding
-    
+
         # Crop out the signature
         signature = signature[y:y+h, x:x+w]
-        
+
         outfile = dirTemp + PREFIX + str(index) + EXT
         cv2.imwrite(outfile, signature)
         index+=1
