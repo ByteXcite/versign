@@ -3,7 +3,6 @@
 
 # Datasets
 db/
-libs/
 
 # Build files
 *.pyc
