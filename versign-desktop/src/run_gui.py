@@ -166,8 +166,8 @@ class RegistrationActivity(Activity):
 
 		def openImage():
 			# open a file chooser dialog and allow the user to select an input image
-			path =  scanImage(outfile="scanned")
-    		#path = scanImage(outfile=userId)
+			#path =  scanImage(outfile="scanned")
+			path = tkFileDialog.askopenfilename()
 
 			# ensure a file path was selected
 			if len(path) > 0:
