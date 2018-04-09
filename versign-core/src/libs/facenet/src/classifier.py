@@ -93,7 +93,12 @@ def main(args):
             print(emb_array)
             i=0
             for r in emb_array:
-                save_filename = os.path.join(save_path, 'R' + str(i) + '.mat')
+                EXT = paths[i].split(".")[-1]
+                while EXT not in ["png", "jpg", "jpeg", "tiff", "bmp"]:
+                    i+=1
+                    EXT = paths[i].split(".")[-1]
+
+                save_filename = os.path.join(save_path, paths[i][:-4] + '.mat')
                 feature_vector = np.array(r)
                 scipy.io.savemat(save_filename, {'feature_vector':feature_vector})
                 i+=1
