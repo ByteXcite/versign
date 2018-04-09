@@ -5,7 +5,7 @@ sys.path.append(rootDir)
 from abc import ABCMeta, abstractmethod
 from PIL import Image, ImageTk
 from scipy import ndimage
-from segment import extract_signature
+from segment import extract_signature, find_signatures
 from user_manager import register, is_registered
 from verification import verify_signature
 
@@ -83,27 +83,133 @@ class MainMenu(Activity):
 		tk.Button(container, width="15", text="VERIFY", command=onVerifyClicked).grid(row=2, column=1, pady=("15", "0"), ipady="5")
 
 class RegistrationActivity(Activity):
+	def __init__(self):
+		self.destImgHolder = None
+		self.userId = tk.StringVar()
+		self.signatures = None
+
+	def resize(self, source, canvas_size):
+		src_w, src_h = source.size
+		dest_w, dest_h = canvas_size
+		if src_w == 0 or src_h == 0:
+			output = Image.fromarray(np.ones(canvas_size).transpose() * 255.0)
+		
+		else:
+			aspect_source = src_w / float(src_h)
+			aspect_canvas = dest_w / float(dest_h)
+
+			if aspect_source > aspect_canvas:
+				new_w = int(dest_w)
+				new_h = int(src_h * float(dest_w)/src_w)
+			else:
+				new_w = int(src_w * float(dest_h)/src_h)
+				new_h = int(dest_h)
+
+			output = source.resize((new_w, new_h), Image.ANTIALIAS)
+	
+		print "Source:", source.size, "Canvas:", canvas_size, "Output:", output.size
+		return output
+
+	def setSignatureImage(self, signatureImage, window):
+		signatureImage = ImageTk.PhotoImage(signatureImage)
+
+		self.destImgHolder.configure(image=signatureImage)
+		self.destImgHolder.image=signatureImage
+
+	def highlightLocatedSignatures(self, image, bounds):
+		img = np.array(image)
+		for bound in bounds:
+			x, y, w, h = bound
+			cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 3)
+
+		return Image.fromarray(img)
+
 	def display(self, app, args=None):
 		def onLogoutClicked():
 			app.startActivity(MainMenu())
+
+		def onRegisterClicked():
+			if self.userId.get() is "":
+				tkMessageBox.showerror("Error", "User ID not provided")
+				return
+
+			if self.signatures is None:
+				tkMessageBox.showerror("Error", "Reference signatures not provided")
+				return
+				
+			userId = self.userId.get()
+			if userId is not "" and self.signatures is not None:	
+				if is_registered(userId, dirCore=rootDir):
+					tkMessageBox.showerror(self.userId.get() + " already exists", "This user ID is already taken. Please provide a unique ID.")
+					return
+					
+				refSigns = self.signatures
+				#h, w = refSigns.shape
+				#x = int(0.025*w)
+				#y = int(0.025*h)
+				#w = w - 2*x
+				#h = h - 2*y
+				#refSigns = refSigns[y:y+h, x:x+w]
+				
+				h, w = refSigns.shape
+
+				if register(userId, refSigns, dirCore=rootDir):
+					tkMessageBox.showinfo("Enrollment Result", "Enrollment successful")
+
+		def openImage():
+			# open a file chooser dialog and allow the user to select an input image
+			path = tkFileDialog.askopenfilename()
+	    
+			# ensure a file path was selected
+			if len(path) > 0:
+				try:
+					self.signatures = cv2.imread(path, 0)
+
+					bounds = find_signatures(self.signatures)
+					signature = Image.fromarray(cv2.imread(path)).convert("RGB")
+					signature = self.highlightLocatedSignatures(signature, bounds)
+					signature = self.resize(signature, (self.destImgHolder.winfo_width(), self.destImgHolder.winfo_height()))
+					self.setSignatureImage(signature, app.window)
+				except:
+					tkMessageBox.showerror("Error", "No signature detected")
 
 		background_image=ImageTk.PhotoImage(Image.open("../res/bg.png"))
 		background_label = tk.Label(app.window, image=background_image, width=795, height=595)
 		background_label.place(x=0, y=0, relwidth=1, relheight=1)
 		background_label.image = background_image
-		background_label.grid(rowspan=6, columnspan=5, sticky="news")
+		background_label.grid(rowspan=60, columnspan=80, sticky="news")
 
-		tk.Button(app.window, text="< Back", command=onLogoutClicked).grid(row=0, columnspan=5, sticky="nw", padx="25", pady="25")
+		rootView = app.window #tk.Frame(app.window)
+		#rootView.grid(rowspan=60, columnspan=80, ipadx="10", ipady="10", sticky="news")
 
-		imageView =  tk.Label(app.window)
-		imageView.configure(background="white")
-		imageView.grid(row=1, column=1, columnspan=3, rowspan=3, ipadx="5", ipady="5", sticky="news")
+		self.backButtonImage=ImageTk.PhotoImage(Image.open("../res/ic_button_back.png"))
+		backButton = tk.Button(rootView, command=onLogoutClicked)
+		backButton.config(image=self.backButtonImage)
+		backButton.grid(row=1, column=1, padx="5", pady="5")
 
-		tk.Label(app.window, text="User ID", fg="white", bg="systemTransparent", width="20", anchor="e").grid(row=4, column=1)
-		tk.Entry(app.window, show="*", width="20").grid(row=4, column=2)
+		instructions_image=ImageTk.PhotoImage(Image.open("../res/instructions.png"))
+		instructionsView = tk.Label(rootView, image=instructions_image, width=275, height=400)
+		instructionsView.configure(background="black")
+		instructionsView.place(x=0, y=0, relwidth=1, relheight=1)
+		instructionsView.image = instructions_image
+		instructionsView.grid(row=2, column=2, rowspan=55, columnspan=30, sticky="news")
 
-		btn = tk.Button(app.window, text="Register")
-		btn.grid(row=5, column=2, ipadx="10", ipady="10")
+		self.captureButtonImage=ImageTk.PhotoImage(Image.open("../res/btn_capture.png"))
+		captureButton = tk.Button(rootView, command=openImage)
+		captureButton.config(image=self.captureButtonImage, width="80", height="25")
+		captureButton.grid(row=35, column=16, sticky="ew", padx="10")
+
+		userIdField = tk.Entry(rootView, textvariable=self.userId)
+		userIdField.grid(row=45, column=12, columnspan=15, sticky="ew")
+
+		self.registerButtonImage=ImageTk.PhotoImage(Image.open("../res/btn_register.png"))
+		registerButton = tk.Button(rootView, command=onRegisterClicked)
+		registerButton.config(image=self.registerButtonImage, width="80", height="25")
+		registerButton.grid(row=55, column=16, sticky="ew", padx="10")
+
+		self.destImgHolder =  tk.Label(rootView, borderwidth=2, relief="solid")
+		self.destImgHolder.configure(background="white")
+		self.destImgHolder.grid(row=2, column=33, rowspan=55, columnspan=40, ipadx="5", ipady="5", sticky="news")
 
 class VerificationActivity(Activity):
 	def __init__(self):
@@ -255,4 +361,4 @@ class App:
 		self.window.mainloop()
 
 my_app = App("VeriSign v1.0")
-my_app.startApp(VerificationActivity())
+my_app.startApp(RegistrationActivity())

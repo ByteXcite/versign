@@ -15,6 +15,8 @@ def remove_xlines(im):
         if pxdt > 0.25:                     # For >25% white pixels, we make the
             lines.append(r)                 # whole scan line (FIXME: Should be
             im[r, columns] = 0              # the actual line only) black.
+            im[r-1, columns] = 0
+            im[r+1, columns] = 0
 
     return im, lines
 

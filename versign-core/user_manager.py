@@ -60,8 +60,13 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
     # Remove grid lines from the image
     refSigns = remove_lines.remove(thresh)
 
-    # Extract four signatures from the grid
-    _h, _w = np.array(refSigns.shape) / 2
+    # Divide 4x2 grid into two 2x2 grids
+    h, w = refSigns.shape
+    refSignsA = refSigns[0:h/2, 0:w]
+    refSignsB = refSigns[h/2:h, 0:w]
+
+    # Extract all eight signatures from the grid
+    _h, _w = np.array(refSignsA.shape) / 2
     py, px = int(_h * 0.05), int(_w * 0.05)
 
     _h, _w = _h - 2*py, _w - 2*px
@@ -69,7 +74,10 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
     signs = []
     for x in [px, _w]:
         for y in [py, _h]:
-            signs.append(refSigns[y:y+_h, x:x+_w])
+            signs.append(refSignsA[y:y+_h, x:x+_w])
+            signs.append(refSignsB[y:y+_h, x:x+_w])
+
+    print len(signs)
 
     # TODO: Preprocess signature images
 
