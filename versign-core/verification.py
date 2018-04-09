@@ -41,6 +41,5 @@ def verify_signature(userId, signature, dirCore=""):
             x_test.append(feat)
 
     # Get predictions from OneClassSVM
-    Y_test, Y_train, n_error_train = OneClassSVM(x_train, x_test)
-    #print Y_test
+    Y_test, Y_train, n_error_train, Y_prob = OneClassSVM(x_train, x_test)
     return int(Y_test[0]) == 1

@@ -29,7 +29,7 @@ for f in os.listdir(dir + "/Questioned/"):
 y_true = np.concatenate([np.ones((35)) * -1, np.ones((5))])
 
 # Get predictions from OneClassSVM
-Y_test, Y_train, n_error_train = classifiers.OneClassSVM(x_train, x_test)
+Y_test, Y_train, n_error_train, Y_prob = classifiers.OneClassSVM(x_train, x_test)
     
 # Calculate prediction error
 print "Prediction accuracy:", round(accuracy_score(y_true, Y_test)*100, 2), "\n"
