@@ -13,9 +13,12 @@ def OneClassSVM(x_train, x_test):
 
     # Predict results
     Y_test = clf.predict(x_test)
-    Y_prob = clf.decision_function(x_test)
+    Y_prob = np.array(clf.decision_function(x_test))
 
-    return Y_test, Y_train, n_error_train, (np.array(Y_prob)+1)/2
+    Y_prob -= np.min(Y_prob)
+    Y_prob /= np.max(Y_prob)
+
+    return Y_test, Y_train, n_error_train, Y_prob
 
 def OneClassSVMWithPCA(x_train, x_test):
     # Dimensionality reduction
