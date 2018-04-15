@@ -1,26 +1,32 @@
-# Author: Muhammad Mahad Tariq
-# Paper CNN Implementation
-# "Learning Features for Offline..."
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+#!/usr/bin/env python
+"""sigver_cnn.py: Implementation of the Convolutional Neural Network used in
+'Learning features for offline handwritten signature verification using deep
+convolutional neural networks'.
+
+Model can be trained and saved using this script."""
+
+__author__      = "Muhammad Mahad Tariq"
+__credits__ = ["Hafemann", "Robert Sabourin", "Oliveira"]
+__status__ = "Development"
 
 import numpy as np
 import tensorflow as tf
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
-
 def cnn_model_fn(features, labels, mode):
   """Model function for CNN."""
   # Input Layer
   input_layer = tf.reshape(features["x"], [-1, 150, 220, 1])
 
+  # Output Tensor Shape is calculated as follows:
+  #     Width -> (InputWidth−FilterWidth+2Padding)/Stride+1
+  #     Height -> (InputHeight−FilterHeight+2Padding)/Stride+1
+  #     Depth -> No. of Filters
+
   # Convolutional Layer #1
-  # Computes 32 features using a 5x5 filter with ReLU activation.
-  # Padding is added to preserve width and height.
-  # Input Tensor Shape: [batch_size, 28, 28, 1]
-  # Output Tensor Shape: [batch_size, 28, 28, 32]
+  # Input Tensor Shape: [batch_size, 150, 220, 1]
+  # Output Tensor Shape: [batch_size, 37, 53, 96]
   conv1 = tf.layers.conv2d(
       inputs=input_layer,
       filters=96,
@@ -30,16 +36,13 @@ def cnn_model_fn(features, labels, mode):
       activation=tf.nn.relu)
 
   # Pooling Layer #1
-  # First max pooling layer with a 2x2 filter and stride of 2
-  # Input Tensor Shape: [batch_size, 28, 28, 32]
-  # Output Tensor Shape: [batch_size, 14, 14, 32]
+  # Input Tensor Shape: [batch_size, 37, 53, 96]
+  # Output Tensor Shape: [batch_size, 18, 26, 96]
   pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[3, 3], strides=2)
 
   # Convolutional Layer #2
-  # Computes 64 features using a 5x5 filter.
-  # Padding is added to preserve width and height.
-  # Input Tensor Shape: [batch_size, 14, 14, 32]
-  # Output Tensor Shape: [batch_size, 14, 14, 64]
+  # Input Tensor Shape: [batch_size, 18, 26, 96]
+  # Output Tensor Shape: [batch_size, 18, 26, 256]
   conv2 = tf.layers.conv2d(
       inputs=pool1,
       filters=256,
@@ -49,57 +52,81 @@ def cnn_model_fn(features, labels, mode):
       activation=tf.nn.relu)
 
   # Pooling Layer #2
-  # Second max pooling layer with a 2x2 filter and stride of 2
-  # Input Tensor Shape: [batch_size, 14, 14, 64]
-  # Output Tensor Shape: [batch_size, 7, 7, 64]
+  # Input Tensor Shape: [batch_size, 18, 26, 256]
+  # Output Tensor Shape: [batch_size, 8, 12, 256]
   pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[3, 3], strides=2)
 
+  # Convolution Layer #3
+  # Input Tensor Shape: [batch_size, 8, 12, 256]
+  # Output Tensor Shape: [batch_size, 8, 12, 384]
   conv3 = tf.layers.conv2d(
-    inputs=pool1,
+    inputs=pool2,
     filters=384,
     kernel_size=[3, 3],
     strides=1,
     padding="same",
     activation=tf.nn.relu)
 
+  # Convolution Layer #4
+  # Input Tensor Shape: [batch_size, 8, 12, 384]
+  # Output Tensor Shape: [batch_size, 8, 12, 384]
   conv4 = tf.layers.conv2d(
-    inputs=pool1,
+    inputs=conv3,
     filters=384,
     kernel_size=[3, 3],
     strides=1,
     padding="same",
     activation=tf.nn.relu)
 
+  # Convolution Layer #5
+  # Input Tensor Shape: [batch_size, 8, 12, 384]
+  # Output Tensor Shape: [batch_size, 8, 12, 384]
   conv5 = tf.layers.conv2d(
-    inputs=pool1,
+    inputs=conv4,
+    filters=384,
+    kernel_size=[3, 3],
+    strides=1,
+    padding="same",
+    activation=tf.nn.relu)
+
+  # Convolution Layer #6
+  # Input Tensor Shape: [batch_size, 8, 12, 384]
+  # Output Tensor Shape: [batch_size, 8, 12, 256]
+  conv6 = tf.layers.conv2d(
+    inputs=conv5,
     filters=256,
     kernel_size=[3, 3],
     strides=1,
     padding="same",
     activation=tf.nn.relu)
 
-  pool3 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[3, 3], strides=2)
+  # Pooling Layer #3
+  # Input Tensor Shape: [batch_size, 8, 12, 256]
+  # Output Tensor Shape: [batch_size, 3, 5, 256]
+  pool3 = tf.layers.max_pooling2d(
+      inputs=conv6,
+      pool_size=[3, 3],
+      strides=2)
 
   # Flatten tensor into a batch of vectors
-  # Input Tensor Shape: [batch_size, 7, 7, 64]
-  # Output Tensor Shape: [batch_size, 7 * 7 * 64]
+  # Input Tensor Shape: [batch_size, 3, 5, 256]
+  # Output Tensor Shape: [batch_size, 3 * 5 * 256]
   pool2_flat = tf.reshape(pool2, [-1, 256 * 3 * 5])
 
   # Dense Layer
-  # Densely connected layer with 1024 neurons
-  # Input Tensor Shape: [batch_size, 7 * 7 * 64]
-  # Output Tensor Shape: [batch_size, 1024]
+  # Densely connected layer with 2048 neurons
+  # Input Tensor Shape: [batch_size, 3 * 5 * 256]
+  # Output Tensor Shape: [batch_size, 2048]
   dense1 = tf.layers.dense(inputs=pool2_flat, units=2048, activation=tf.nn.relu)
-
-  dense2 = tf.layers.dense(inputs=dense2, units=2048, activation=tf.nn.relu)
+  dense2 = tf.layers.dense(inputs=dense1, units=2048, activation=tf.nn.relu)
 
   # Add dropout operation; 0.6 probability that element will be kept
   dropout = tf.layers.dropout(
-      inputs=dense, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
+      inputs=dense2, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
 
   # Logits layer
-  # Input Tensor Shape: [batch_size, 1024]
-  # Output Tensor Shape: [batch_size, 10]
+  # Input Tensor Shape: [batch_size, 2048]
+  # Output Tensor Shape: [batch_size, 531]
   logits = tf.layers.dense(inputs=dropout, units=531)
 
   predictions = {
@@ -115,8 +142,7 @@ def cnn_model_fn(features, labels, mode):
   # Calculate Loss (for both TRAIN and EVAL modes)
   loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
 
-
-# Here we use tf.train.momentumOptimizer with nestrov = true
+  # Here we use tf.train.momentumOptimizer with nestrov = true
   # Configure the Training Op (for TRAIN mode)
   if mode == tf.estimator.ModeKeys.TRAIN:
     optimizer = tf.train.MomentumOptimizer(
@@ -142,6 +168,9 @@ def main(unused_argv):
   train_labels = np.asarray(mnist.train.labels, dtype=np.int32)
   eval_data = mnist.test.images  # Returns np.array
   eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
+
+  print train_data.shape, eval_data.shape, eval_labels.shape
+  exit(0)
 
   # Create the Estimator
   mnist_classifier = tf.estimator.Estimator(
@@ -172,7 +201,7 @@ def main(unused_argv):
       num_epochs=1,
       shuffle=False)
   eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
-  print(eval_results)
+  print eval_results
 
 
 if __name__ == "__main__":
