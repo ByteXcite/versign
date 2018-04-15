@@ -25,7 +25,7 @@ public class StaffDao {
     public HttpRequest<Staff> getFetchRequest(String username, String password) {
         HttpRequest<Staff> request = new HttpRequest<>(
                 server,
-                "LoginController.php",
+                "route.php?controller=LoginController&action=login",
                 Staff.class
         );
         request.setPayload(new Credentials(username, password));
