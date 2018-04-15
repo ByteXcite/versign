@@ -1,17 +1,21 @@
 import sys
-import subprocess
 rootDir = "../../versign-core/"
 sys.path.append(rootDir)
 
 from abc import ABCMeta, abstractmethod
 from PIL import Image, ImageTk
 from scipy import ndimage
-from segment import extract_signature, find_signatures
-from user_manager import register, is_registered
-from verification import verify_signature
+
+import src
+
+from src.segment import extract_signature, find_signatures
+from src.user_manager import register, is_registered
+from src.verification import verify_signature
+
 
 import cv2
 import numpy as np
+import subprocess
 import threading
 import time
 import tkFileDialog
