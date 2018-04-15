@@ -11,6 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.bytexcite.verisign.R;
 import com.bytexcite.verisign.model.entity.SessionData;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -86,12 +90,14 @@ public class LaunchScreen extends AppCompatActivity {
         private final long delay;
 
         private Intent showLoginForm;
-        private Intent launchCameraActivity;
+        private Intent showMainMenu;
+        private Intent launchVerificationScreen;
 
         LaunchScreenController(long delay) {
             this.delay = delay;
             showLoginForm = new Intent(LaunchScreen.this, LoginActivity.class);
-            launchCameraActivity = new Intent(LaunchScreen.this, MenuMainActivity.class);
+            showMainMenu = new Intent(LaunchScreen.this, MenuMainActivity.class);
+            launchVerificationScreen = new Intent(LaunchScreen.this, VerifySignatureActivity.class);
         }
 
         private void startNextActivity(Intent intent) {
@@ -101,16 +107,41 @@ public class LaunchScreen extends AppCompatActivity {
         }
 
         void startTimer() {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    startNextActivity(
-                            sessionData.getActiveUser() == null
-                                    ? showLoginForm
-                                    : launchCameraActivity
-                    );
-                }
-            }, delay);
+            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        startNextActivity(
+                                sessionData.getActiveUser() == null
+                                        ? showLoginForm
+                                        : sessionData.getActiveUser().isAdmin()
+                                        ? showMainMenu
+                                        : launchVerificationScreen
+                        );
+                    }
+                }, delay);
+            } else {
+                FirebaseAuth.getInstance().signInAnonymously()
+                        .addOnCompleteListener(LaunchScreen.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    new Timer().schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            startNextActivity(
+                                                    sessionData.getActiveUser() == null
+                                                            ? showLoginForm
+                                                            : sessionData.getActiveUser().isAdmin()
+                                                            ? showMainMenu
+                                                            : launchVerificationScreen
+                                            );
+                                        }
+                                    }, delay);
+                                }
+                            }
+                        });
+            }
         }
     }
 

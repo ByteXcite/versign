@@ -18,7 +18,7 @@ import com.bytexcite.verisign.util.HashGenerator;
 import java.net.MalformedURLException;
 
 import sfllhkhan95.android.rest.HttpRequest;
-import sfllhkhan95.android.rest.ResponseHandler;
+import sfllhkhan95.android.rest.ResponseListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -73,8 +73,12 @@ public class LoginActivity extends AppCompatActivity {
     public void signInSuccess() {
         Toast.makeText(this, signInSuccess, Toast.LENGTH_SHORT).show();
 
-        Intent launchCameraActivity = new Intent(LoginActivity.this, MenuMainActivity.class);
-        startActivity(launchCameraActivity);
+        Intent showMainMenu = new Intent(LoginActivity.this, MenuMainActivity.class);
+        Intent launchVerificationScreen = new Intent(LoginActivity.this, VerifySignatureActivity.class);
+        startActivity(sessionData.getActiveUser().isAdmin()
+                ? showMainMenu
+                : launchVerificationScreen);
+        finish();
     }
 
     public void signInFailure() {
@@ -85,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(this, credentialsError, Toast.LENGTH_SHORT).show();
     }
 
-    private class LoginController implements View.OnClickListener, ResponseHandler<Staff> {
+    private class LoginController implements View.OnClickListener, ResponseListener<Staff> {
 
         private final LoginActivity loginActivity;
 
@@ -110,18 +114,19 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
-        @Override
-        public void onResponseReceived(@Nullable Staff staff) {
-            if (staff != null && !staff.isAdmin()) {
-                sessionData.createSession(staff);
-                loginActivity.signInSuccess();
-            } else {
-                loginActivity.signInFailure();
-            }
-        }
-
         private boolean isValid(String string) {
             return string != null && !string.trim().equals("");
+        }
+
+        @Override
+        public void onRequestSuccessful(Staff staff) {
+            sessionData.createSession(staff);
+            loginActivity.signInSuccess();
+        }
+
+        @Override
+        public void onRequestFailed() {
+            loginActivity.signInFailure();
         }
     }
 
