@@ -94,179 +94,175 @@ def main(args):
         # Get the paths for the corresponding images
         lfw_paths, actual_issame = lfw.get_paths(os.path.expanduser(args.lfw_dir), pairs)
     
-    with tf.Graph().as_default():
-        tf.set_random_seed(args.seed)
-        global_step = tf.Variable(0, trainable=False)
-        
-        # Get a list of image paths and their labels
-        image_list, label_list = facenet.get_image_paths_and_labels(train_set)
-        assert len(image_list)>0, 'The training set should not be empty'
-        
-        val_image_list, val_label_list = facenet.get_image_paths_and_labels(val_set)
-
-        # Create a queue that produces indices into the image_list and label_list 
-        labels = ops.convert_to_tensor(label_list, dtype=tf.int32)
-        range_size = array_ops.shape(labels)[0]
-        index_queue = tf.train.range_input_producer(range_size, num_epochs=None,
-                             shuffle=True, seed=None, capacity=32)
-        
-        index_dequeue_op = index_queue.dequeue_many(args.batch_size*args.epoch_size, 'index_dequeue')
-        
-        learning_rate_placeholder = tf.placeholder(tf.float32, name='learning_rate')
-        batch_size_placeholder = tf.placeholder(tf.int32, name='batch_size')
-        phase_train_placeholder = tf.placeholder(tf.bool, name='phase_train')
-        image_paths_placeholder = tf.placeholder(tf.string, shape=(None,1), name='image_paths')
-        labels_placeholder = tf.placeholder(tf.int32, shape=(None,1), name='labels')
-        control_placeholder = tf.placeholder(tf.int32, shape=(None,1), name='control')
-        
-        images_and_labels = []
-        nrof_preprocess_threads = 4
-        
-        input_queue = data_flow_ops.FIFOQueue(capacity=2000000,
-                                    dtypes=[tf.string, tf.int32, tf.int32],
-                                    shapes=[(1,), (1,), (1,)],
-                                    shared_name=None, name=None)
-        enqueue_op = input_queue.enqueue_many([image_paths_placeholder, labels_placeholder, control_placeholder], name='enqueue_op')
-        images_and_labels = facenet.create_input_pipeline(images_and_labels, input_queue, image_size, nrof_preprocess_threads)
-
-        image_batch, label_batch = tf.train.batch_join(
-            images_and_labels, batch_size=batch_size_placeholder, 
-            shapes=[image_size + (3,), ()], enqueue_many=True,
-            capacity=4 * nrof_preprocess_threads * args.batch_size,
-            allow_smaller_final_batch=True)
-        image_batch = tf.identity(image_batch, 'image_batch')
-        image_batch = tf.identity(image_batch, 'input')
-        label_batch = tf.identity(label_batch, 'label_batch')
-        
-        print('Number of classes in training set: %d' % nrof_classes)
-        print('Number of examples in training set: %d' % len(image_list))
-
-        print('Number of classes in validation set: %d' % len(val_set))
-        print('Number of examples in validation set: %d' % len(val_image_list))
-        
-        print('Building training graph')
-        
-        # Build the inference graph
-        prelogits, _ = network.inference(image_batch, args.keep_probability, 
-            phase_train=phase_train_placeholder, bottleneck_layer_size=args.embedding_size, 
-            weight_decay=args.weight_decay)
-        logits = slim.fully_connected(prelogits, len(train_set), activation_fn=None, 
-                weights_initializer=slim.initializers.xavier_initializer(), 
-                weights_regularizer=slim.l2_regularizer(args.weight_decay),
-                scope='Logits', reuse=False)
-
-        embeddings = tf.nn.l2_normalize(prelogits, 1, 1e-10, name='embeddings')
-
-        # Norm for the prelogits
-        eps = 1e-4
-        prelogits_norm = tf.reduce_mean(tf.norm(tf.abs(prelogits)+eps, ord=args.prelogits_norm_p, axis=1))
-        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, prelogits_norm * args.prelogits_norm_loss_factor)
-
-        # Add center loss
-        prelogits_center_loss, _ = facenet.center_loss(prelogits, label_batch, args.center_loss_alfa, nrof_classes)
-        tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, prelogits_center_loss * args.center_loss_factor)
-
-        learning_rate = tf.train.exponential_decay(learning_rate_placeholder, global_step,
-            args.learning_rate_decay_epochs*args.epoch_size, args.learning_rate_decay_factor, staircase=True)
-        tf.summary.scalar('learning_rate', learning_rate)
-
-        # Calculate the average cross entropy loss across the batch
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-            labels=label_batch, logits=logits, name='cross_entropy_per_example')
-        cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
-        tf.add_to_collection('losses', cross_entropy_mean)
-        
-        correct_prediction = tf.cast(tf.equal(tf.argmax(logits, 1), tf.cast(label_batch, tf.int64)), tf.float32)
-        accuracy = tf.reduce_mean(correct_prediction)
-        
-        # Calculate the total losses
-        regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-        total_loss = tf.add_n([cross_entropy_mean] + regularization_losses, name='total_loss')
-
-        # Build a Graph that trains the model with one batch of examples and updates the model parameters
-        train_op = facenet.train(total_loss, global_step, args.optimizer, 
-            learning_rate, args.moving_average_decay, tf.global_variables(), args.log_histograms)
-        
-        # Create a saver
-        saver = tf.train.Saver(tf.trainable_variables(), max_to_keep=3)
-
-        # Build the summary operation based on the TF collection of Summaries.
-        summary_op = tf.summary.merge_all()
-
-        # Start running operations on the Graph.
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory_fraction)
-        sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
-        sess.run(tf.global_variables_initializer())
-        sess.run(tf.local_variables_initializer())
-        summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
-        coord = tf.train.Coordinator()
-        tf.train.start_queue_runners(coord=coord, sess=sess)
-
-        with sess.as_default():
-
-            if pretrained_model:
-                print('Restoring pretrained model: %s' % pretrained_model)
-                saver.restore(sess, pretrained_model)
-
-            # Training and validation loop
-            print('Running training')
-            nrof_steps = args.max_nrof_epochs*args.epoch_size
-            nrof_val_samples = int(math.ceil(args.max_nrof_epochs / args.validate_every_n_epochs))   # Validate every validate_every_n_epochs as well as in the last epoch
-            stat = {
-                'loss': np.zeros((nrof_steps,), np.float32),
-                'center_loss': np.zeros((nrof_steps,), np.float32),
-                'reg_loss': np.zeros((nrof_steps,), np.float32),
-                'xent_loss': np.zeros((nrof_steps,), np.float32),
-                'prelogits_norm': np.zeros((nrof_steps,), np.float32),
-                'accuracy': np.zeros((nrof_steps,), np.float32),
-                'val_loss': np.zeros((nrof_val_samples,), np.float32),
-                'val_xent_loss': np.zeros((nrof_val_samples,), np.float32),
-                'val_accuracy': np.zeros((nrof_val_samples,), np.float32),
-                'lfw_accuracy': np.zeros((args.max_nrof_epochs,), np.float32),
-                'lfw_valrate': np.zeros((args.max_nrof_epochs,), np.float32),
-                'learning_rate': np.zeros((args.max_nrof_epochs,), np.float32),
-                'time_train': np.zeros((args.max_nrof_epochs,), np.float32),
-                'time_validate': np.zeros((args.max_nrof_epochs,), np.float32),
-                'time_evaluate': np.zeros((args.max_nrof_epochs,), np.float32),
-                'prelogits_hist': np.zeros((args.max_nrof_epochs, 1000), np.float32),
-              }
-            for epoch in range(1,args.max_nrof_epochs+1):
-                step = sess.run(global_step, feed_dict=None)
-                # Train for one epoch
-                t = time.time()
-                cont = train(args, sess, epoch, image_list, label_list, index_dequeue_op, enqueue_op, image_paths_placeholder, labels_placeholder,
-                    learning_rate_placeholder, phase_train_placeholder, batch_size_placeholder, control_placeholder, global_step, 
-                    total_loss, train_op, summary_op, summary_writer, regularization_losses, args.learning_rate_schedule_file,
-                    stat, cross_entropy_mean, accuracy, learning_rate,
-                    prelogits, prelogits_center_loss, args.random_rotate, args.random_crop, args.random_flip, prelogits_norm, args.prelogits_hist_max, args.use_fixed_image_standardization)
-                stat['time_train'][epoch-1] = time.time() - t
+    for d in ['/device:GPU:0']:
+        with tf.device(d):
+            with tf.Graph().as_default():
+                tf.set_random_seed(args.seed)
+                global_step = tf.Variable(0, trainable=False)
                 
-                if not cont:
-                    break
-                  
-                t = time.time()
-                if len(val_image_list)>0 and ((epoch-1) % args.validate_every_n_epochs == args.validate_every_n_epochs-1 or epoch==args.max_nrof_epochs):
-                    validate(args, sess, epoch, val_image_list, val_label_list, enqueue_op, image_paths_placeholder, labels_placeholder, control_placeholder,
-                        phase_train_placeholder, batch_size_placeholder, 
-                        stat, total_loss, regularization_losses, cross_entropy_mean, accuracy, args.validate_every_n_epochs, args.use_fixed_image_standardization)
-                stat['time_validate'][epoch-1] = time.time() - t
+                # Get a list of image paths and their labels
+                image_list, label_list = facenet.get_image_paths_and_labels(train_set)
+                assert len(image_list)>0, 'The training set should not be empty'
+                
+                val_image_list, val_label_list = facenet.get_image_paths_and_labels(val_set)
 
-                # Save variables and the metagraph if it doesn't exist already
-                save_variables_and_metagraph(sess, saver, summary_writer, model_dir, subdir, epoch)
+                # Create a queue that produces indices into the image_list and label_list 
+                labels = ops.convert_to_tensor(label_list, dtype=tf.int32)
+                range_size = array_ops.shape(labels)[0]
+                index_queue = tf.train.range_input_producer(range_size, num_epochs=None,
+                                    shuffle=True, seed=None, capacity=32)
+                
+                index_dequeue_op = index_queue.dequeue_many(args.batch_size*args.epoch_size, 'index_dequeue')
+                
+                learning_rate_placeholder = tf.placeholder(tf.float32, name='learning_rate')
+                batch_size_placeholder = tf.placeholder(tf.int32, name='batch_size')
+                phase_train_placeholder = tf.placeholder(tf.bool, name='phase_train')
+                image_paths_placeholder = tf.placeholder(tf.string, shape=(None,1), name='image_paths')
+                labels_placeholder = tf.placeholder(tf.int32, shape=(None,1), name='labels')
+                control_placeholder = tf.placeholder(tf.int32, shape=(None,1), name='control')
+                
+                nrof_preprocess_threads = 4
+                input_queue = data_flow_ops.FIFOQueue(capacity=2000000,
+                                            dtypes=[tf.string, tf.int32, tf.int32],
+                                            shapes=[(1,), (1,), (1,)],
+                                            shared_name=None, name=None)
+                enqueue_op = input_queue.enqueue_many([image_paths_placeholder, labels_placeholder, control_placeholder], name='enqueue_op')
+                image_batch, label_batch = facenet.create_input_pipeline(input_queue, image_size, nrof_preprocess_threads, batch_size_placeholder)
 
-                # Evaluate on LFW
-                t = time.time()
-                if args.lfw_dir:
-                    evaluate(sess, enqueue_op, image_paths_placeholder, labels_placeholder, phase_train_placeholder, batch_size_placeholder, control_placeholder, 
-                        embeddings, label_batch, lfw_paths, actual_issame, args.lfw_batch_size, args.lfw_nrof_folds, log_dir, step, summary_writer, stat, epoch, 
-                        args.lfw_distance_metric, args.lfw_subtract_mean, args.lfw_use_flipped_images, args.use_fixed_image_standardization)
-                stat['time_evaluate'][epoch-1] = time.time() - t
+                image_batch = tf.identity(image_batch, 'image_batch')
+                image_batch = tf.identity(image_batch, 'input')
+                label_batch = tf.identity(label_batch, 'label_batch')
+                
+                print('Number of classes in training set: %d' % nrof_classes)
+                print('Number of examples in training set: %d' % len(image_list))
 
-                print('Saving statistics')
-                with h5py.File(stat_file_name, 'w') as f:
-                    for key, value in stat.iteritems():
-                        f.create_dataset(key, data=value)
-    
+                print('Number of classes in validation set: %d' % len(val_set))
+                print('Number of examples in validation set: %d' % len(val_image_list))
+                
+                print('Building training graph')
+                
+                # Build the inference graph
+                prelogits, _ = network.inference(image_batch, args.keep_probability, 
+                    phase_train=phase_train_placeholder, bottleneck_layer_size=args.embedding_size, 
+                    weight_decay=args.weight_decay)
+                logits = slim.fully_connected(prelogits, len(train_set), activation_fn=None, 
+                        weights_initializer=slim.initializers.xavier_initializer(), 
+                        weights_regularizer=slim.l2_regularizer(args.weight_decay),
+                        scope='Logits', reuse=False)
+
+                embeddings = tf.nn.l2_normalize(prelogits, 1, 1e-10, name='embeddings')
+
+                # Norm for the prelogits
+                eps = 1e-4
+                prelogits_norm = tf.reduce_mean(tf.norm(tf.abs(prelogits)+eps, ord=args.prelogits_norm_p, axis=1))
+                tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, prelogits_norm * args.prelogits_norm_loss_factor)
+
+                # Add center loss
+                prelogits_center_loss, _ = facenet.center_loss(prelogits, label_batch, args.center_loss_alfa, nrof_classes)
+                tf.add_to_collection(tf.GraphKeys.REGULARIZATION_LOSSES, prelogits_center_loss * args.center_loss_factor)
+
+                learning_rate = tf.train.exponential_decay(learning_rate_placeholder, global_step,
+                    args.learning_rate_decay_epochs*args.epoch_size, args.learning_rate_decay_factor, staircase=True)
+                tf.summary.scalar('learning_rate', learning_rate)
+
+                # Calculate the average cross entropy loss across the batch
+                cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+                    labels=label_batch, logits=logits, name='cross_entropy_per_example')
+                cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
+                tf.add_to_collection('losses', cross_entropy_mean)
+                
+                correct_prediction = tf.cast(tf.equal(tf.argmax(logits, 1), tf.cast(label_batch, tf.int64)), tf.float32)
+                accuracy = tf.reduce_mean(correct_prediction)
+                
+                # Calculate the total losses
+                regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+                total_loss = tf.add_n([cross_entropy_mean] + regularization_losses, name='total_loss')
+
+                # Build a Graph that trains the model with one batch of examples and updates the model parameters
+                train_op = facenet.train(total_loss, global_step, args.optimizer, 
+                    learning_rate, args.moving_average_decay, tf.global_variables(), args.log_histograms)
+                
+                # Create a saver
+                saver = tf.train.Saver(tf.trainable_variables(), max_to_keep=3)
+
+                # Build the summary operation based on the TF collection of Summaries.
+                summary_op = tf.summary.merge_all()
+
+                # Start running operations on the Graph.
+                gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_memory_fraction)
+                gpu_options.allow_growth = True
+                sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
+                sess.run(tf.global_variables_initializer())
+                sess.run(tf.local_variables_initializer())
+                summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
+                coord = tf.train.Coordinator()
+                tf.train.start_queue_runners(coord=coord, sess=sess)
+
+                with sess.as_default():
+
+                    if pretrained_model:
+                        print('Restoring pretrained model: %s' % pretrained_model)
+                        saver.restore(sess, pretrained_model)
+
+                    # Training and validation loop
+                    print('Running training')
+                    nrof_steps = args.max_nrof_epochs*args.epoch_size
+                    nrof_val_samples = int(math.ceil(args.max_nrof_epochs / args.validate_every_n_epochs))   # Validate every validate_every_n_epochs as well as in the last epoch
+                    stat = {
+                        'loss': np.zeros((nrof_steps,), np.float32),
+                        'center_loss': np.zeros((nrof_steps,), np.float32),
+                        'reg_loss': np.zeros((nrof_steps,), np.float32),
+                        'xent_loss': np.zeros((nrof_steps,), np.float32),
+                        'prelogits_norm': np.zeros((nrof_steps,), np.float32),
+                        'accuracy': np.zeros((nrof_steps,), np.float32),
+                        'val_loss': np.zeros((nrof_val_samples,), np.float32),
+                        'val_xent_loss': np.zeros((nrof_val_samples,), np.float32),
+                        'val_accuracy': np.zeros((nrof_val_samples,), np.float32),
+                        'lfw_accuracy': np.zeros((args.max_nrof_epochs,), np.float32),
+                        'lfw_valrate': np.zeros((args.max_nrof_epochs,), np.float32),
+                        'learning_rate': np.zeros((args.max_nrof_epochs,), np.float32),
+                        'time_train': np.zeros((args.max_nrof_epochs,), np.float32),
+                        'time_validate': np.zeros((args.max_nrof_epochs,), np.float32),
+                        'time_evaluate': np.zeros((args.max_nrof_epochs,), np.float32),
+                        'prelogits_hist': np.zeros((args.max_nrof_epochs, 1000), np.float32),
+                    }
+                    for epoch in range(1,args.max_nrof_epochs+1):
+                        step = sess.run(global_step, feed_dict=None)
+                        # Train for one epoch
+                        t = time.time()
+                        cont = train(args, sess, epoch, image_list, label_list, index_dequeue_op, enqueue_op, image_paths_placeholder, labels_placeholder,
+                            learning_rate_placeholder, phase_train_placeholder, batch_size_placeholder, control_placeholder, global_step, 
+                            total_loss, train_op, summary_op, summary_writer, regularization_losses, args.learning_rate_schedule_file,
+                            stat, cross_entropy_mean, accuracy, learning_rate,
+                            prelogits, prelogits_center_loss, args.random_rotate, args.random_crop, args.random_flip, prelogits_norm, args.prelogits_hist_max, args.use_fixed_image_standardization)
+                        stat['time_train'][epoch-1] = time.time() - t
+                        
+                        if not cont:
+                            break
+                        
+                        t = time.time()
+                        if len(val_image_list)>0 and ((epoch-1) % args.validate_every_n_epochs == args.validate_every_n_epochs-1 or epoch==args.max_nrof_epochs):
+                            validate(args, sess, epoch, val_image_list, val_label_list, enqueue_op, image_paths_placeholder, labels_placeholder, control_placeholder,
+                                phase_train_placeholder, batch_size_placeholder, 
+                                stat, total_loss, regularization_losses, cross_entropy_mean, accuracy, args.validate_every_n_epochs, args.use_fixed_image_standardization)
+                        stat['time_validate'][epoch-1] = time.time() - t
+
+                        # Save variables and the metagraph if it doesn't exist already
+                        save_variables_and_metagraph(sess, saver, summary_writer, model_dir, subdir, epoch)
+
+                        # Evaluate on LFW
+                        t = time.time()
+                        if args.lfw_dir:
+                            evaluate(sess, enqueue_op, image_paths_placeholder, labels_placeholder, phase_train_placeholder, batch_size_placeholder, control_placeholder, 
+                                embeddings, label_batch, lfw_paths, actual_issame, args.lfw_batch_size, args.lfw_nrof_folds, log_dir, step, summary_writer, stat, epoch, 
+                                args.lfw_distance_metric, args.lfw_subtract_mean, args.lfw_use_flipped_images, args.use_fixed_image_standardization)
+                        stat['time_evaluate'][epoch-1] = time.time() - t
+
+                        print('Saving statistics')
+                        with h5py.File(stat_file_name, 'w') as f:
+                            for key, value in stat.iteritems():
+                                f.create_dataset(key, data=value)
+            
     return model_dir
   
 def find_threshold(var, percentile):
