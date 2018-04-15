@@ -23,7 +23,7 @@ import scipy.io
 from scipy.misc import imread
 
 if __name__ == "__main__":
-    if len(sys.argv) not in [3,4]:
+    if len(sys.argv) not in [3,5]:
         print('Usage: python process_folder.py <signatures_path> <save_path> '
               '[canvas_size]')
         print(sys.argv)
@@ -32,27 +32,32 @@ if __name__ == "__main__":
     signatures_path = sys.argv[1]
     save_path = sys.argv[2]
     model_weight_path="models/signet.pkl"
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 3:
         canvas_size = (952, 1360)  # Maximum signature size
     else:
-        canvas_size = (int(sys.argv[4]), int(sys.argv[5]))
+        canvas_size = (int(sys.argv[3]), int(sys.argv[4]))
 
     print('Processing images from folder "%s" and saving to folder "%s"' % (signatures_path, save_path))
     print('Using model %s' % model_weight_path)
     print('Using canvas size: %s' % (canvas_size,))
-    extract_features(signatures_path, save_path, model_weight_path, canvas_size)
-
-def extract_features(signatures_path, save_path, model_weight_path, canvas_size=(952, 1360)):
+    
     # Load the model
     model = CNNModel(signet, model_weight_path)
+    extract_features(signatures_path, save_path, model, canvas_size)
 
+def extract_features(signatures_path, save_path, model, canvas_size=(952, 1360)):
+    print "Processing", signatures_path,
     files = os.listdir(signatures_path)
 
     # Note: it there is a large number of signatures to process, it is faster to
     # process them in batches (i.e. use "get_feature_vector_multiple")
     for f in files:
+        if os.path.isdir(os.path.join(signatures_path, f)):
+            extract_features(os.path.join(signatures_path, f), os.path.join(save_path, f), model, canvas_size)
+            continue
+
         # Skip if file is not an image
-        if not f.endswith('.png') and not f.endswith('.jpg'):
+        if f.split('.')[-1] not in ['jpg', 'png', 'tif']:
             continue
     
         # Load and pre-process the signature
@@ -66,4 +71,7 @@ def extract_features(signatures_path, save_path, model_weight_path, canvas_size=
 
         # Save in the matlab format
         save_filename = os.path.join(save_path, os.path.splitext(f)[0] + '.mat')
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+
         scipy.io.savemat(save_filename, {'feature_vector':feature_vector})
