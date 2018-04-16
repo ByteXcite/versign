@@ -7,6 +7,7 @@
 from PIL import Image
 
 import cv2, random, os, numpy as np, sys
+from preprocess.resize import center_inside
 
 
 def otsu(image):
@@ -51,13 +52,14 @@ def augment(inDir, outDir):
         cv2.imwrite(outFile, cv2.imread(inDir +  fn + ext, 0))
 
         # Crop and normalize image's size
-        #cropped = ImageProcessor().preprocess(Image.open(outFile).convert("L"))
-        #cropped.save(outFile)
+        cropped = center_inside(cv2.imread(outFile, 0), canvas_size=(150, 220))
+        cv2.imwrite(outFile, cropped)
 
         # Augment input data by rotating image at random angles in range (-5, 5)
         image = Image.open(outFile)
         for i in range(0, copies):
             rotated = randomRotate(image, min=-aMax, max=aMax)
+            rotated = Image.fromarray(center_inside(np.array(rotated), canvas_size=(150, 220)))
             rotated.save(outDir + fn + str(i + 1) + ext)
 
 def main():

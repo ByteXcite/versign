@@ -31,9 +31,9 @@ if __name__ == "__main__":
 
     signatures_path = sys.argv[1]
     save_path = sys.argv[2]
-    model_weight_path="models/signet.pkl"
+    model_weight_path="models/signetf_lambda0.999.pkl"
     if len(sys.argv) == 3:
-        canvas_size = (952, 1360)  # Maximum signature size
+        canvas_size = (150, 220)  # Maximum signature size
     else:
         canvas_size = (int(sys.argv[3]), int(sys.argv[4]))
 
@@ -42,11 +42,14 @@ if __name__ == "__main__":
     print('Using canvas size: %s' % (canvas_size,))
     
     # Load the model
-    model = CNNModel(signet, model_weight_path)
-    extract_features(signatures_path, save_path, model, canvas_size)
+    extract_features(signatures_path, save_path, model_weight_path, canvas_size)
 
-def extract_features(signatures_path, save_path, model, canvas_size=(952, 1360)):
-    print "Processing", signatures_path,
+def extract_features(signatures_path, save_path, model_weight_path, canvas_size=(150, 220)):
+    print('Processing images from folder "%s" and saving to folder "%s"' % (signatures_path, save_path))
+    print('Using model %s' % model_weight_path)
+    print('Using canvas size: %s' % (canvas_size,))
+
+    model = CNNModel(signet, model_weight_path)
     files = os.listdir(signatures_path)
 
     # Note: it there is a large number of signatures to process, it is faster to
@@ -63,11 +66,11 @@ def extract_features(signatures_path, save_path, model, canvas_size=(952, 1360))
         # Load and pre-process the signature
         filename = os.path.join(signatures_path, f)
         original = imread(filename, flatten=1)
-        processed = preprocess_signature(original, canvas_size)
+        #processed = preprocess_signature(original, canvas_size)
         #Image.fromarray(processed).show()
 
         # Use the CNN to extract features
-        feature_vector = model.get_feature_vector(processed)
+        feature_vector = model.get_feature_vector(original)
 
         # Save in the matlab format
         save_filename = os.path.join(save_path, os.path.splitext(f)[0] + '.mat')

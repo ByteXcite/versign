@@ -1,5 +1,5 @@
 from src.augment import augment
-from src.libs.sigver_wiwd.process_folder import extract_features
+from libs.sigver_wiwd.process_folder import extract_features
 
 import cv2
 import numpy as np
@@ -77,7 +77,7 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
             signs.append(refSignsA[y:y+_h, x:x+_w])
             signs.append(refSignsB[y:y+_h, x:x+_w])
 
-    print len(signs)
+    print "Signatures located:", len(signs)
 
     # TODO: Preprocess signature images
 
@@ -109,7 +109,7 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
     shutil.rmtree(dirTemp)
 
     # Extract features from reference signatures
-    extract_features(dirImages, dirFeatures, dirCore + "src/libs/sigver_wiwd/models/signet.pkl")
+    extract_features(dirImages, dirFeatures, dirCore + "src/libs/sigver_wiwd/models/signetf_lambda0.999.pkl")
     return True
 
 def unregister(userId):

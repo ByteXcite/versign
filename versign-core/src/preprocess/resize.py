@@ -7,7 +7,7 @@ from scipy.misc import imresize
 import numpy as np
 import cv2
 
-def resize_relative(image, canvas_size, interpolation="bicubic"):
+def resize_relative(image, canvas_size=(150, 220), interpolation="bilinear"):
     """Resizes an image to within specified width and height while
     preserving the aspect ratio.
 
@@ -34,7 +34,7 @@ def resize_relative(image, canvas_size, interpolation="bicubic"):
 
     return imresize(image, (_h, _w), interp=interpolation)
 
-def center_inside(image, canvas_size, interpolation="bicubic"):
+def center_inside(image, canvas_size=(150, 220), interpolation="bilinear"):
     """
     Centers an image inside a canvas. Image is resized to fit
     on a white canvas while preserving the aspect ratio.
@@ -57,7 +57,7 @@ def center_inside(image, canvas_size, interpolation="bicubic"):
     canvas[yoff:yoff+h, xoff:xoff+w] = image
     return canvas
 
-def batch_resize(root_dir, out_dir, canvas_size=(250, 250), interpolation="bicubic"):
+def batch_resize(root_dir, out_dir, canvas_size=(150, 220), interpolation="bilinear"):
     """
     This function resizes all images in a given directory, including
     its subfolders to given canvas size using specified interpolation

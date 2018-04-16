@@ -1,4 +1,5 @@
 from sklearn.externals import joblib
+from skimage.morphology import skeletonize
 
 import cv2
 import numpy as np
@@ -47,26 +48,28 @@ def find_signatures(refSigns):
     return bounds
 
 def extract_signature(im, model):
+    print 'Loading model'
     # Load the trained model
     clf = joblib.load(model)
 
     # crop bottom right of image where signature lies, according to our prior knowledge
+    print 'Cropping cheque'
     w, h = im.shape
     im = im[w/2:w, int(0.60*h):h]
     w, h = im.shape
 
     # Thresholding to get binary image
-    original = cv2.bitwise_not(im)
-    smoothed = cv2.GaussianBlur(original, (35, 35), 0)
-    cv2.subtract(original, smoothed, im)
-    ret3, thresh = cv2.threshold(original, 0, 255, \
-                                 cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    print 'Thresholding'
+    thresh = cv2.adaptiveThreshold(im, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+                                   cv2.THRESH_BINARY_INV, 25, 30)
 
     # Remove lines from the image
-    thresh = remove_lines.remove(thresh)
+    print 'Removing lines'
+    thresh = remove_lines.remove(thresh, fill=True)
 
     # Perform component analysis
-    connectivity = 4        # 4-way / 8-way connectivity
+    print 'Finding connected components'
+    connectivity = 8        # 4-way / 8-way connectivity
     count, labels, stats, centroids = cv2.connectedComponentsWithStats(thresh, connectivity, cv2.CV_32S)
 
     # Extract components
@@ -100,10 +103,6 @@ def extract_signature(im, model):
         else:
             thresh[im] = 0
 
-    #cv2.imshow("After Component Analysis", thresh)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
-
     # Invert colors
     thresh = cv2.bitwise_not(thresh)
 
@@ -114,4 +113,24 @@ def extract_signature(im, model):
     x, y, w, h = x-10, y-10, w+20, h+20     # add padding
     
     # Crop out the signature
-    return thresh[y:y+h, x:x+w]
+    cropped = thresh[y:y+h, x:x+w]
+    points = np.argwhere(cropped==255)
+    try:
+        print 'Filling strokes'
+        for point in points:
+            try:
+                y, x = point[0], point[1]
+                tY, tX = point[0] + 1, point[1]
+                bY, bX = point[0] - 1, point[1]
+                lY, lX = point[0], point[1] + 1
+                rY, rX = point[0], point[1] - 1
+
+                if cropped[tY][tX] == 0 and cropped[bY][bX] == 0 and cropped[y][x] != 0:
+                    cropped[y][x] = 0
+                elif cropped[lY][lX] == 0 and cropped[rY][rX] == 0 and cropped[y][x] != 0:
+                    cropped[y][x] = 0
+            except:
+                continue
+    except:
+        pass
+    return center_inside(cropped)

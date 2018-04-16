@@ -19,7 +19,7 @@ def verify_signature(userId, signature, dirCore=""):
     cv2.imwrite(dirTemp + "Q001.png", signature)
 
     # Extract features from questioned signature
-    extract_features(dirTemp, dirTemp, dirCore + "src/libs/sigver_wiwd/models/signet.pkl")
+    extract_features(dirTemp, dirTemp, dirCore + "src/libs/sigver_wiwd/models/signetf_lambda0.999.pkl")
 
     dirTrain = dirCore + "db/users/" + userId + "/features/"
     dirTest = dirTemp
