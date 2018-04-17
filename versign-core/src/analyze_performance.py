@@ -1,4 +1,4 @@
-from src import classifiers
+import classifiers
 from sklearn.metrics import accuracy_score
 
 import numpy as np
@@ -31,11 +31,15 @@ def read_test_data(test_dir):
             feat = np.array(mat['feature_vector'][0][:])
             x_test.append(feat)
 
-            # Read label
-            if len(f) == 14:
+            if f.startswith('F'):
                 label = -1
-            elif len(f) == 10:
+            elif f.startswith('G'):
                 label = 1
+            # Read label
+            #if len(f) == 14:
+            #    label = -1
+            #elif len(f) == 10:
+            #    label = 1
             #id = int(f[1:-4]) - 1
             #label = groundtruth[id]
             y_true.append(int(label))
@@ -66,8 +70,8 @@ def get_user_classes(train_dir, test_dir):
     return classes
 
 # Define globals
-data_dir  = 'db/features/ICFHRDatasets_Sabourin512_Features_F0.95'
-DATASET   = '4NSigComp2011/Dutch'
+data_dir  = 'db/features'
+DATASET   = 'our_dataset'
 
 train_dir = data_dir + '/' + DATASET + '/' + 'Ref'
 test_dir  = data_dir + '/' + DATASET + '/' + 'Questioned'

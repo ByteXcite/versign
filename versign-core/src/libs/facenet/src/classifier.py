@@ -33,7 +33,6 @@ import facenet
 import os
 import sys
 import math
-import scipy.io
 import pickle
 from sklearn.svm import SVC
 
@@ -48,10 +47,10 @@ def main(args):
             if args.use_split_dataset:
                 dataset_tmp = facenet.get_dataset(args.data_dir)
                 train_set, test_set = split_dataset(dataset_tmp, args.min_nrof_images_per_class, args.nrof_train_images_per_class)
-                #if (args.mode=='TRAIN'):
-                dataset = train_set
-                #elif (args.mode=='CLASSIFY'):
-                #    dataset = test_set
+                if (args.mode=='TRAIN'):
+                    dataset = train_set
+                elif (args.mode=='CLASSIFY'):
+                    dataset = test_set
             else:
                 dataset = facenet.get_dataset(args.data_dir)
 
@@ -88,20 +87,39 @@ def main(args):
                 feed_dict = { images_placeholder:images, phase_train_placeholder:False }
                 emb_array[start_index:end_index,:] = sess.run(embeddings, feed_dict=feed_dict)
             
-            save_path = args.data_dir
-            print("Saving extracted features in", save_path)
-            print(emb_array)
-            i=0
-            for r in emb_array:
-                EXT = paths[i].split(".")[-1]
-                while EXT not in ["png", "jpg", "jpeg", "tiff", "bmp"]:
-                    i+=1
-                    EXT = paths[i].split(".")[-1]
+            classifier_filename_exp = os.path.expanduser(args.classifier_filename)
 
-                save_filename = os.path.join(save_path, paths[i][:-4] + '.mat')
-                feature_vector = np.array(r)
-                scipy.io.savemat(save_filename, {'feature_vector':feature_vector})
-                i+=1
+            if (args.mode=='TRAIN'):
+                # Train classifier
+                print('Training classifier')
+                model = SVC(kernel='linear', probability=True)
+                model.fit(emb_array, labels)
+            
+                # Create a list of class names
+                class_names = [ cls.name.replace('_', ' ') for cls in dataset]
+
+                # Saving classifier model
+                with open(classifier_filename_exp, 'wb') as outfile:
+                    pickle.dump((model, class_names), outfile)
+                print('Saved classifier model to file "%s"' % classifier_filename_exp)
+                
+            elif (args.mode=='CLASSIFY'):
+                # Classify images
+                print('Testing classifier')
+                with open(classifier_filename_exp, 'rb') as infile:
+                    (model, class_names) = pickle.load(infile)
+
+                print('Loaded classifier model from file "%s"' % classifier_filename_exp)
+
+                predictions = model.predict_proba(emb_array)
+                best_class_indices = np.argmax(predictions, axis=1)
+                best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
+                
+                for i in range(len(best_class_indices)):
+                    print('%4d  %s: %.3f' % (i, class_names[best_class_indices[i]], best_class_probabilities[i]))
+                    
+                accuracy = np.mean(np.equal(best_class_indices, labels))
+                print('Accuracy: %.3f' % accuracy)
                 
             
 def split_dataset(dataset, min_nrof_images_per_class, nrof_train_images_per_class):
@@ -120,16 +138,16 @@ def split_dataset(dataset, min_nrof_images_per_class, nrof_train_images_per_clas
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
     
-    #parser.add_argument('mode', type=str, choices=['TRAIN', 'CLASSIFY'],
-    #   help='Indicates if a new classifier should be trained or a classification ' + 
-    #    'model should be used for classification', default='CLASSIFY')
+    parser.add_argument('mode', type=str, choices=['TRAIN', 'CLASSIFY'],
+        help='Indicates if a new classifier should be trained or a classification ' + 
+        'model should be used for classification', default='CLASSIFY')
     parser.add_argument('data_dir', type=str,
         help='Path to the data directory containing aligned LFW face patches.')
     parser.add_argument('model', type=str, 
         help='Could be either a directory containing the meta_file and ckpt_file or a model protobuf (.pb) file')
-    #parser.add_argument('classifier_filename', 
-    #    help='Classifier model file name as a pickle (.pkl) file. ' + 
-    #    'For training this is the output and for classification this is an input.')
+    parser.add_argument('classifier_filename', 
+        help='Classifier model file name as a pickle (.pkl) file. ' + 
+        'For training this is the output and for classification this is an input.')
     parser.add_argument('--use_split_dataset', 
         help='Indicates that the dataset specified by data_dir should be split into a training and test set. ' +  
         'Otherwise a separate test set can be specified using the test_data_dir option.', action='store_true')
