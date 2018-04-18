@@ -44,7 +44,7 @@ Download and extract the pre-trained models by running the following:
 cd versign-core
 mkdirs db/models/
 cd db/models/
-wget 
+wget https://storage.googleapis.com/versign_db/versign_models.zip
 unzip versign_models.zip
 ```
 
