@@ -1,6 +1,6 @@
 # VerSign: An Off-Line Signature Verification System
 
-A complete system to detect frauds using forged signatures.
+pip install https://github.com/Lasagne/Lasagne/archive/master.zip
 
 ## Dependencies
 ### Python
@@ -35,15 +35,13 @@ The following instructions describe how to set up the project on a linux machine
     ```
     sudo apt-get install python
     ```
-
+    
 3. You will need Python's package manager `pip` to download rest of the dependencies. Make sure that you have it by typing `pip` in terminal and pressing Enter. If it gives an error, get it with:
     ```
     sudo apt-get install python-pip
     ```
     
-Next, you need to install all of the dependencies of the project, as listed under Dependencies above. Skip any which you already have. To check if a certain package is installed, open Python console with `python` and then try importing that package using `import <package-name>`. It should give an `ImportError` if the package is not installed.
-
-4. Some of these can be installed with `pip`. Run the following
+4. Next, you need to install all of the dependencies of the project, as listed under Dependencies above. Skip any which you already have. To check if a certain package is installed, open Python console with `python` and then try importing that package using `import <package-name>`. It should give an `ImportError` if the package is not installed. Some of these can be installed with `pip`. Run the following:
     ```
     pip install Pillow
     pip install opencv-python
@@ -54,10 +52,12 @@ Next, you need to install all of the dependencies of the project, as listed unde
     pip install -U scikit-learn
     pip install scikit-image
     ```
+    
 5. Tkinter is required for handling GUI. If not already installed (it should be!), run the following on Ubuntu:
     ```
     sudo apt-get install python-tk
     ```
+
 
 ## PROBLEM STATEMENT
 Forged signatures on bank cheques and legal documents, etc. leads to financial and legal fraud which can hinder justice or cause economic harm to individuals, organisations and/or states. We will address this problem in our semester project by designing a generic system which can be installed in different environments to combat fraud through signature forgery.
