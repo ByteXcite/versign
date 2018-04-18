@@ -1,27 +1,6 @@
 # VerSign: An Off-Line Signature Verification System
 
-pip install https://github.com/Lasagne/Lasagne/archive/master.zip
-
-## Dependencies
-### Python
-#### Image Processing
-- [OpenCV](https://pypi.org/project/opencv-python/)
-- [Python Image Library (PIL)](https://pillow.readthedocs.io/en/5.1.x/installation.html)
-- [Scikit-Image](http://scikit-image.org/docs/dev/install.html)
-#### Machine Learning
-- [Lasagne](https://lasagne.readthedocs.io/)
-- [Scikit-Learn](http://scikit-learn.org/stable/install.html)
-- [Tensorflow](https://www.tensorflow.org/install/)
-- [Theano](http://deeplearning.net/software/theano/)
-#### Mathematical Computations
-- [SciPy](https://www.scipy.org/install.html)
-- [NumPy](http://www.numpy.org/)
-
-### Android
-Not listed.
-
-### PHP
-Not listed.
+Signature verification is the process of using machine learning methods to validate the authenticity of an individual's signature. Signatures can be of one of the two types; on-line or off-line, and this project focuses on off-line signature verification. Aim of this project is to design an algorithm which can distinguish between genuine and forged signatures using writer independent features, and to develop a system using this algorithm which can be used to verify signatures on bank cheques. We intend to build a complete end-to-end hardware/software system which can be used to acquire signatures from bank cheques, perform signature verification, and display the results. For this purpose, various deep learning techniques were developed and tested on standard datasets for off-line signature verification, as well as on a dataset collected by ourselves.
 
 ## Installation
 The following instructions describe how to set up the project on a linux machine. The commands below were tested on Ubuntu 17.10 x64. However, the source code is cross-platform and can be set up on MacOS or Windows similarly, too. In some cases, you may need to use equivalent commands for your OS.
@@ -59,21 +38,40 @@ The following instructions describe how to set up the project on a linux machine
     ```
 
 
-## PROBLEM STATEMENT
-Forged signatures on bank cheques and legal documents, etc. leads to financial and legal fraud which can hinder justice or cause economic harm to individuals, organisations and/or states. We will address this problem in our semester project by designing a generic system which can be installed in different environments to combat fraud through signature forgery.
+## Downloading the models
+Download and extract the pre-trained models by running the following:
+```
+cd versign-core
+mkdirs db/models/
+cd db/models/
+wget 
+unzip versign_models.zip
+```
 
-## OUR SOLUTION
-Our solution is a client-server system designed to make offline signature verification accessible. Offline signature verification works on scanned images as opposed to online signature verification, which has access to dynamic signature data. Although considered more difficult than online verification, our solution focuses on offline verification because of its more practicability in real environments.
 
-### Major Components
-Our solution has the following five major components: A machine learning algorithm for verifying signatures offline in Python programming language, implemented as an independ, reusable library which can be used in any systems that may need it. A web application for registering individuals and providing their training data (i.e. signatures). A database for storing profiles of individuals and their samples of their signatures which the verification algorithm will use. Smartphone applications for capturing signatures and sending them to the web server for verification. Client application will display profile of the matching individual if the signature is verified. A web program for receiving scanned signatures from client applications, verifying the signature using training data in database and the Python library, and sending verification status and matching profile to the requesting client. For each environment where this system is installed, there would be a centralized database and a centralized web program for signature verification, and multiple client devices for scanning signatures. The web application will be accessible to system administrators through secure credentials, and the client applications for each installation environment will be connected to the centralized database of that particular installation environment.
+## Using App
+Desktop application can be started by opening terminal in the `versign-desktop` directory, and then running `python run_gui.py`. A CLI version is also available in `run_cli.py` script.
 
-### Languages and Tools
-- Java/XML
-- PHP
-- MySQL
-- Python
-- HTML/CSS/JavaScript
+Website is located in `versign-web` directory. Source code of Android interface is in `versign-android` directory, which can be imported into Android Studio, built and installed on an Android device. To use the Android app, you need to set up your web server (WAMP/MAMP/LAMP on Mac/Windows/Linux respectively) to point to `versign-web` directory, which contains not only the website but also the server code which handles RESTful requests from Android app.
 
-## OUR SOLUTION’S NOVELTY
-The novelty of our system comes from its generic design, which lends it to deployment in multiple, varying environments with little to no alteration. For example, it may be installed for use in banks, individual organizations, or even at state level. One scenario where our solution may be relevant is detailed below.
+
+## Dependencies
+### Python
+#### Image Processing
+- [OpenCV](https://pypi.org/project/opencv-python/)
+- [Python Image Library (PIL)](https://pillow.readthedocs.io/en/5.1.x/installation.html)
+- [Scikit-Image](http://scikit-image.org/docs/dev/install.html)
+#### Machine Learning
+- [Lasagne](https://lasagne.readthedocs.io/)
+- [Scikit-Learn](http://scikit-learn.org/stable/install.html)
+- [Tensorflow](https://www.tensorflow.org/install/)
+- [Theano](http://deeplearning.net/software/theano/)
+#### Mathematical Computations
+- [SciPy](https://www.scipy.org/install.html)
+- [NumPy](http://www.numpy.org/)
+
+### Android
+Not listed.
+
+### PHP
+Not listed.
