@@ -1,6 +1,6 @@
 <resources>
     <!-- AppData -->
-    <string name="app_name">VeriSign</string>
+    <string name="app_name">VerSign</string>
     <!-- /AppData -->
 
     <!-- Messages -->
@@ -16,7 +16,7 @@
     <string name="verificationSuccess">Verification successful. Signature is successful!</string>
     <string name="verificationFailure">Signature is forged!</string>
     <string name="verificationError">Signature verification failed.</string>
-    <string name="preparingSignature">Preparing ...</string>
+    <string name="preparingSignature">Preparing …</string>
     <!-- /Messages -->
 
     <!-- Labels -->
