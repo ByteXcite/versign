@@ -6,6 +6,10 @@ build/
 out/
 target/
 
+# Portfolio files
+details.json
+index.php
+
 # OS configuration files
 Desktop.ini
 .DS_STORE
