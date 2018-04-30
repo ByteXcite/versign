@@ -13,13 +13,14 @@ def verify_cheque(userId, cheque, dirCore=""):
 
 def verify_signature(userId, signature, dirCore=""):
     dirTemp = dirCore + "db/users/" + userId + "/temp/"
+    print dirTemp
     if not os.path.exists(dirTemp):
         os.makedirs(dirTemp)
 
     cv2.imwrite(dirTemp + "Q001.png", signature)
 
     # Extract features from questioned signature
-    extract_features(dirTemp, dirTemp, dirCore + "src/libs/sigver_wiwd/models/signetf_lambda0.999.pkl")
+    extract_features(dirTemp, dirTemp, dirCore + "db/models/sabourin/signetf_lambda0.999.pkl")
 
     dirTrain = dirCore + "db/users/" + userId + "/features/"
     dirTest = dirTemp

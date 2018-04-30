@@ -119,7 +119,7 @@ def parse_arguments(argv):
     parser.add_argument('--batch_size', type=int,
         help='Number of images to process in a batch.', default=90)
     parser.add_argument('--image_size', type=int,
-        help='Image size (height, width) in pixels.', default=160)
+        help='Image size (height, width) in pixels.', default=250)
     parser.add_argument('--seed', type=int,
         help='Random seed.', default=666)
     parser.add_argument('--min_nrof_images_per_class', type=int,
