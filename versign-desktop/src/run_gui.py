@@ -294,9 +294,6 @@ class VerificationActivity(Activity):
 				tkMessageBox.showerror('Error', 'Signature not provided')
 				return
 
-			input = self.userId.get()
-			genuine = self.userId.get().endswith(' ')
-			forged = self.userId.get().startswith(' ')
 			userId = self.userId.get().strip()
 			if userId is not '' and self.signature is not None:
 				if not is_registered(userId, dirCore=rootDir):
@@ -304,11 +301,7 @@ class VerificationActivity(Activity):
 					return
 
 				result = verify_signature(userId, self.signature, rootDir)
-				if genuine is True:
-					tkMessageBox.showinfo('Verification Result', 'GENUINE. Signature belongs to user \'' + self.userId.get() + '\'')
-				elif forged is True:
-					tkMessageBox.showinfo('Verification Result', 'FORGED. Signature does not belong to user \'' + self.userId.get() + '\'')
-				elif result is True:
+				if result is True:
 					tkMessageBox.showinfo('Verification Result', 'GENUINE. Signature belongs to user \'' + self.userId.get() + '\'')
 				else:
 					tkMessageBox.showinfo('Verification Result', 'FORGED. Signature does not belong to user \'' + self.userId.get() + '\'')
