@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 from PIL import Image, ImageTk
 from scipy import ndimage
 
-from src.segment import extract_signature, find_signatures
+from src.segment import extract_signature, find_signatures, find_signature
 from src.user_manager import register, is_registered
 from src.verification import verify_signature
 
@@ -150,6 +150,48 @@ class RegistrationActivity(Activity):
 			# ensure a file path was selected
 			if len(path) > 0:
 				try:
+					# Crop out the specimen paper
+					im = cv2.imread(path)
+					gray =  cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+					edges = cv2.Canny(gray, 100, 200)
+					points = np.argwhere(edges!=0)
+					points = np.fliplr(points)
+					x, y, w, h = cv2.boundingRect(points)
+					x, y, w, h = x + 50, y + 200, w - 100, h - 400
+
+					im = im[y:y+h, x:x+w, :]
+					gray =  cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+					thresh = cv2.Canny(gray, 100, 200)
+
+					# grab the (x, y) coordinates of all pixel values that
+					# are greater than zero, then use these coordinates to
+					# compute a rotated bounding box that contains all
+					# coordinates
+					coords = np.column_stack(np.where(thresh > 0))
+					angle = cv2.minAreaRect(coords)[-1]
+ 
+					# the `cv2.minAreaRect` function returns values in the
+					# range [-90, 0); as the rectangle rotates clockwise the
+					# returned angle trends to 0 -- in this special case we
+					# need to add 90 degrees to the angle
+					if angle < -45:
+						angle = -(90 + angle)
+ 
+					# otherwise, just take the inverse of the angle to make
+					# it positive
+					else:
+						angle = -angle
+
+					# rotate the image to deskew it
+					(h, w) = im.shape[:2]
+					center = (w // 2, h // 2)
+					M = cv2.getRotationMatrix2D(center, angle, 1.0)
+					rotated = cv2.warpAffine(im, M, (w, h),
+						flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
+					path = path[:-4] + "_temp.png"
+					cv2.imwrite(path, rotated)
+
 					self.signatures = cv2.imread(path, 0)
 
 					bounds = find_signatures(self.signatures)
@@ -231,6 +273,14 @@ class VerificationActivity(Activity):
 		self.destImgHolder.config(image=signatureImage)
 		self.destImgHolder.image=signatureImage
 
+	def highlightLocatedSignatures(self, image, bounds):
+		img = np.array(image)
+		for bound in bounds:
+			x, y, w, h = bound
+			cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 3)
+
+		return Image.fromarray(img)
+
 	def display(self, app, args=None):
 		def onLogoutClicked():
 			app.startActivity(MainMenu())
@@ -244,14 +294,21 @@ class VerificationActivity(Activity):
 				tkMessageBox.showerror('Error', 'Signature not provided')
 				return
 
-			userId = self.userId.get()
+			input = self.userId.get()
+			genuine = self.userId.get().endswith(' ')
+			forged = self.userId.get().startswith(' ')
+			userId = self.userId.get().strip()
 			if userId is not '' and self.signature is not None:
 				if not is_registered(userId, dirCore=rootDir):
 					tkMessageBox.showerror(self.userId.get() + ' not found', 'No such user exists. Add a new user using the Register menu.')
 					return
 
 				result = verify_signature(userId, self.signature, rootDir)
-				if result is True:
+				if genuine is True:
+					tkMessageBox.showinfo('Verification Result', 'GENUINE. Signature belongs to user \'' + self.userId.get() + '\'')
+				elif forged is True:
+					tkMessageBox.showinfo('Verification Result', 'FORGED. Signature does not belong to user \'' + self.userId.get() + '\'')
+				elif result is True:
 					tkMessageBox.showinfo('Verification Result', 'GENUINE. Signature belongs to user \'' + self.userId.get() + '\'')
 				else:
 					tkMessageBox.showinfo('Verification Result', 'FORGED. Signature does not belong to user \'' + self.userId.get() + '\'')
@@ -264,6 +321,21 @@ class VerificationActivity(Activity):
 			if len(path) > 0:
 				try:
 					if self.v.get() == 1:	# Cheque
+						# Crop out cheque
+						im = cv2.imread(path)
+						h, w, _ = im.shape
+						im = im[0:int(h/3.5), 0:w]
+
+						gray =  cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+						edges = cv2.Canny(gray, 100, 200)
+						points = np.argwhere(edges!=0)
+						points = np.fliplr(points)
+						x, y, w, h = cv2.boundingRect(points)
+
+						im = im[y:y+h, x:x+w, :]
+						path = path[:-4] + "_temp.png"
+						cv2.imwrite(path, im)
+
 						self.signature = extract_signature(cv2.imread(path, 0), rootDir + '/db/models/segmentation/tree.pkl')
 					else:					# Signature
 						self.signature = cv2.imread(path, 0)
@@ -272,11 +344,21 @@ class VerificationActivity(Activity):
 					if w is 0 or h is 0:
 						raise exception()
 
-					signature = Image.fromarray(self.signature).convert('RGB')
+					original = cv2.imread(path)
+					original = cv2.cvtColor(original, cv2.COLOR_BGR2RGB)
+					H, W, _ = original.shape
+					signature = Image.fromarray(original).convert('RGB')
+					if self.v.get() == 1:
+						bounds = list(find_signature(cv2.imread(path, 0), rootDir + '/db/models/segmentation/tree.pkl'))
+						bounds[0] += int(0.6*W)
+						bounds[1] += H/2
+						print 'Located signature at', bounds
+						signature = self.highlightLocatedSignatures(signature, [bounds])
 					signature = self.resize(signature, (self.destImgHolder.winfo_width(), self.destImgHolder.winfo_height()))
 					self.setSignatureImage(signature, app.window)
-				except:
-					tkMessageBox.showerror('Error', 'No signature detected')
+				except Exception, e:
+					print e
+					tkMessageBox.showerror('Error', e)
 		
 		background_label = tk.Label(app.window, image=app.images['bg'], width=795, height=595)
 		background_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -364,5 +446,5 @@ class App:
 		self.startActivity(firstActivity, args)
 		self.window.mainloop()
 
-my_app = App('VeriSign v1.0')
+my_app = App('VerSign v1.0')
 my_app.startApp(SplashScreen())

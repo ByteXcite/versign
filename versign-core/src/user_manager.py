@@ -109,7 +109,7 @@ def register(userId, refSigns, dbPath="db/users/", dirCore=""):
     shutil.rmtree(dirTemp)
 
     # Extract features from reference signatures
-    extract_features(dirImages, dirFeatures, dirCore + "src/libs/sigver_wiwd/models/signetf_lambda0.999.pkl")
+    extract_features(dirImages, dirFeatures, dirCore + "db/models/sabourin/signetf_lambda0.999.pkl")
     return True
 
 def unregister(userId):
