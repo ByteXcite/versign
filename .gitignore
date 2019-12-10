@@ -2,14 +2,14 @@
 .idea/
 
 # Build files
-build/
-out/
-target/
+bin
+build
+out
+target
+release
 
-# Portfolio files
-details.json
-index.php
-
-# OS configuration files
+# OS files files
 Desktop.ini
 .DS_STORE
+Icon?
+._*
