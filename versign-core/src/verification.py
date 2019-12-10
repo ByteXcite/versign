@@ -9,12 +9,12 @@ import scipy.io
 
 
 def verify_cheque(userId, cheque, dirCore=""):
-    return verify_signature(userId, extract_signature(cheque, dirCore + "db/models/tree.pkl"), dirCore)
+    return verify_signature(userId, extract_signature(cheque, dirCore + "db/models/segmentation/tree.pkl"), dirCore)
 
 def verify_signature(userId, signature, dirCore=""):
     dirTemp = dirCore + "db/users/" + userId + "/temp/"
     print dirTemp
-    if not os.path.exists(dirTemp):
+seg    if not os.path.exists(dirTemp):
         os.makedirs(dirTemp)
 
     cv2.imwrite(dirTemp + "Q001.png", signature)
